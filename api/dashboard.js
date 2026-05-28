@@ -2,24 +2,21 @@ const https = require('https');
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') return res.status(200).end();
-
-  var token = (req.body && req.body.token) || req.query.token;
-  var dbid = (req.body && req.body.dbid) || req.query.dbid;
-
-  if (!token || !dbid) return res.status(400).json({ message: 'Token y database ID requeridos.' });
-
-  dbid = dbid.replace(/-/g, '');
+  if (req.method !== 'POST') return res.status(405).json({ message: 'Method not allowed' });
 
   try {
-    var body = JSON.stringify({ page_size: 100 });
+    var token = req.body.token;
+    var dbid = req.body.dbid;
+    if (!token || !dbid) return res.status(400).json({ message: 'Token y database ID requeridos.' });
 
+    var body = JSON.stringify({ page_size: 100 });
     var options = {
       hostname: 'api.notion.com',
-      path: '/v1/databases/' + dbid + '/query',
+      path: '/v1/databases/' + dbid.replace(/-/g, '') + '/query',
       method: 'POST',
       headers: {
         'Authorization': 'Bearer ' + token,
@@ -30,53 +27,47 @@ module.exports = async function handler(req, res) {
     };
 
     var data = await new Promise(function(resolve, reject) {
-      var request = https.request(options, function(response) {
-        var rawData = '';
-        response.on('data', function(chunk) { rawData += chunk; });
+      var req2 = https.request(options, function(response) {
+        var raw = '';
+        response.on('data', function(c) { raw += c; });
         response.on('end', function() {
-          try { resolve({ status: response.statusCode, body: JSON.parse(rawData) }); }
+          try { resolve({ status: response.statusCode, body: JSON.parse(raw) }); }
           catch(e) { reject(e); }
         });
       });
-      request.on('error', reject);
-      request.write(body);
-      request.end();
+      req2.on('error', reject);
+      req2.write(body);
+      req2.end();
     });
 
-    if (data.status !== 200) {
-      return res.status(data.status).json({ message: data.body.message || 'Error de Notion.' });
-    }
+    if (data.status !== 200) return res.status(data.status).json({ message: data.body.message || 'Error Notion.' });
 
     var results = data.body.results || [];
 
     function getProp(props, name) {
-      var key = name.toLowerCase().trim();
-      var found = Object.keys(props).find(function(k) {
-        return k.toLowerCase().trim() === key;
-      });
+      var k = name.toLowerCase();
+      var found = Object.keys(props).find(function(p) { return p.toLowerCase() === k; });
       return found ? props[found] : null;
     }
 
-    function getStatusClean(prop) {
+    function statusClean(prop) {
       if (!prop) return '';
-      var name = '';
-      if (prop.status && prop.status.name) name = prop.status.name;
-      else if (prop.select && prop.select.name) name = prop.select.name;
-      return name.replace(/[^\p{L}\s]/gu, '').trim().toLowerCase();
+      var n = (prop.status && prop.status.name) ? prop.status.name :
+              (prop.select && prop.select.name) ? prop.select.name : '';
+      return n.replace(/[^\p{L}\s]/gu, '').trim().toLowerCase();
     }
 
-    function getStatusFull(prop) {
-      if (!prop) return '';
-      if (prop.status && prop.status.name) return prop.status.name;
-      if (prop.select && prop.select.name) return prop.select.name;
-      return '';
+    function statusFull(prop) {
+      if (!prop) return 'Sin status';
+      return (prop.status && prop.status.name) ? prop.status.name :
+             (prop.select && prop.select.name) ? prop.select.name : 'Sin status';
     }
 
-    function getMultiSelectFirst(prop) {
-      if (!prop) return '';
+    function multiSelectFirst(prop, fallback) {
+      if (!prop) return fallback || 'Sin valor';
       if (prop.multi_select && prop.multi_select.length > 0) return prop.multi_select[0].name;
       if (prop.select && prop.select.name) return prop.select.name;
-      return '';
+      return fallback || 'Sin valor';
     }
 
     var totalPagado = 0;
@@ -92,42 +83,37 @@ module.exports = async function handler(req, res) {
       var props = page.properties;
       if (!props) return;
 
-      var presProp = getProp(props, 'presupuesto');
+      var presProp = getProp(props, 'PRESUPUESTO');
       var presupuesto = (presProp && typeof presProp.number === 'number') ? presProp.number : 0;
 
-      var statusProp = getProp(props, 'status');
-      var statusClean = getStatusClean(statusProp);
-      var statusFull = getStatusFull(statusProp) || 'Sin status';
-      var esActivo = statusClean.indexOf('activo') !== -1;
-      var esRenovado = statusClean.indexOf('renovado') !== -1;
+      var stProp = getProp(props, 'STATUS');
+      var stClean = statusClean(stProp);
+      var stFull = statusFull(stProp);
+      var esActivo = stClean.indexOf('activo') !== -1;
+      var esRenovado = stClean.indexOf('renovado') !== -1;
       if (esActivo) marcasActivas++;
       if (esRenovado) marcasRenovadas++;
-      byStatus[statusFull] = (byStatus[statusFull] || 0) + 1;
+      byStatus[stFull] = (byStatus[stFull] || 0) + 1;
 
-      var tipoProp = getProp(props, 'tipo');
-      var tipoFull = getMultiSelectFirst(tipoProp) || 'Sin tipo';
-      byTipo[tipoFull] = (byTipo[tipoFull] || 0) + 1;
+      var tipoProp = getProp(props, 'TIPO');
+      var tipoNombre = multiSelectFirst(tipoProp, 'Sin tipo');
+      byTipo[tipoNombre] = (byTipo[tipoNombre] || 0) + 1;
 
-      var pagadoProp = getProp(props, 'pagado');
+      var pagadoProp = getProp(props, 'PAGADO');
       var isPagado = pagadoProp && pagadoProp.checkbox === true;
 
-      var esActivaORenovada = esActivo || esRenovado;
-
-      if (esActivaORenovada && presupuesto > 0) {
+      if ((esActivo || esRenovado) && presupuesto > 0) {
         if (isPagado) {
           totalPagado += presupuesto;
-
-          var indProp = getProp(props, 'industria');
-          var industria = getMultiSelectFirst(indProp) || 'Sin industria';
+          var indProp = getProp(props, 'INDUSTRIA');
+          var industria = multiSelectFirst(indProp, 'Sin industria');
           byIndustria[industria] = (byIndustria[industria] || 0) + presupuesto;
-
-          var marcaProp = getProp(props, 'marca');
+          var marcaProp = getProp(props, 'MARCA');
           var cliente = 'Sin nombre';
           if (marcaProp && marcaProp.title && marcaProp.title.length > 0) {
             cliente = marcaProp.title[0].plain_text;
           }
           byCliente[cliente] = (byCliente[cliente] || 0) + presupuesto;
-
         } else {
           totalPorCobrar += presupuesto;
         }
@@ -141,7 +127,6 @@ module.exports = async function handler(req, res) {
     };
 
     var now = new Date();
-
     return res.status(200).json({
       totalPagado: totalPagado,
       totalPorCobrar: totalPorCobrar,
@@ -155,7 +140,7 @@ module.exports = async function handler(req, res) {
       mes: now.toLocaleString('es-ES', { month: 'long', year: 'numeric' })
     });
 
-  } catch(error) {
-    return res.status(500).json({ message: 'Error: ' + error.message });
+  } catch(e) {
+    return res.status(500).json({ message: 'Error: ' + e.message });
   }
 };
