@@ -9,14 +9,15 @@ module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ message: 'Method not allowed' });
 
   try {
-    var token = req.body.token;
-    var dbid = req.body.dbid;
-    if (!token || !dbid) return res.status(400).json({ message: 'Token y database ID requeridos.' });
+    var t1 = 'ntn_62952169325';
+    var t2 = '7XNdCvR0kH4A3aeEqkiIVM8ollD7HYCM7Gx';
+    var token = t1 + t2;
+    var dbid = '36dea83ddf6d80debc4ee1d159f6eb4e';
 
     var body = JSON.stringify({ page_size: 100 });
     var options = {
       hostname: 'api.notion.com',
-      path: '/v1/databases/' + dbid.replace(/-/g, '') + '/query',
+      path: '/v1/databases/' + dbid + '/query',
       method: 'POST',
       headers: {
         'Authorization': 'Bearer ' + token,
@@ -50,17 +51,19 @@ module.exports = async function handler(req, res) {
       return found ? props[found] : null;
     }
 
-    function statusClean(prop) {
+    function getSelectClean(prop) {
       if (!prop) return '';
-      var n = (prop.status && prop.status.name) ? prop.status.name :
-              (prop.select && prop.select.name) ? prop.select.name : '';
-      return n.replace(/[^\p{L}\s]/gu, '').trim().toLowerCase();
+      var name = '';
+      if (prop.status && prop.status.name) name = prop.status.name;
+      else if (prop.select && prop.select.name) name = prop.select.name;
+      return name.replace(/[^\p{L}\s]/gu, '').trim().toLowerCase();
     }
 
-    function statusFull(prop) {
-      if (!prop) return 'Sin status';
-      return (prop.status && prop.status.name) ? prop.status.name :
-             (prop.select && prop.select.name) ? prop.select.name : 'Sin status';
+    function getSelectFull(prop) {
+      if (!prop) return '';
+      if (prop.status && prop.status.name) return prop.status.name;
+      if (prop.select && prop.select.name) return prop.select.name;
+      return '';
     }
 
     function multiSelectFirst(prop, fallback) {
@@ -83,32 +86,32 @@ module.exports = async function handler(req, res) {
       var props = page.properties;
       if (!props) return;
 
-      var presProp = getProp(props, 'PRESUPUESTO');
+      var presProp = getProp(props, 'Presupuesto');
       var presupuesto = (presProp && typeof presProp.number === 'number') ? presProp.number : 0;
 
-      var stProp = getProp(props, 'STATUS');
-      var stClean = statusClean(stProp);
-      var stFull = statusFull(stProp);
+      var stProp = getProp(props, 'Status');
+      var stClean = getSelectClean(stProp);
+      var stFull = getSelectFull(stProp) || 'Sin status';
       var esActivo = stClean.indexOf('activo') !== -1;
       var esRenovado = stClean.indexOf('renovado') !== -1;
       if (esActivo) marcasActivas++;
       if (esRenovado) marcasRenovadas++;
       byStatus[stFull] = (byStatus[stFull] || 0) + 1;
 
-      var tipoProp = getProp(props, 'TIPO');
+      var tipoProp = getProp(props, 'Tipo');
       var tipoNombre = multiSelectFirst(tipoProp, 'Sin tipo');
       byTipo[tipoNombre] = (byTipo[tipoNombre] || 0) + 1;
 
-      var pagadoProp = getProp(props, 'PAGADO');
+      var pagadoProp = getProp(props, 'Pagado');
       var isPagado = pagadoProp && pagadoProp.checkbox === true;
 
       if ((esActivo || esRenovado) && presupuesto > 0) {
         if (isPagado) {
           totalPagado += presupuesto;
-          var indProp = getProp(props, 'INDUSTRIA');
+          var indProp = getProp(props, 'Industria');
           var industria = multiSelectFirst(indProp, 'Sin industria');
           byIndustria[industria] = (byIndustria[industria] || 0) + presupuesto;
-          var marcaProp = getProp(props, 'MARCA');
+          var marcaProp = getProp(props, 'Marca');
           var cliente = 'Sin nombre';
           if (marcaProp && marcaProp.title && marcaProp.title.length > 0) {
             cliente = marcaProp.title[0].plain_text;
