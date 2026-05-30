@@ -44,10 +44,10 @@ module.exports = async function handler(req, res) {
 
     var results = data.body.results || [];
 
-    // Busca columna por nombre exacto o variantes
-    function getProp(props, ...names) {
-      for (var name of names) {
-        var k = name.toLowerCase();
+    function getProp(props) {
+      var names = Array.prototype.slice.call(arguments, 1);
+      for (var i = 0; i < names.length; i++) {
+        var k = names[i].toLowerCase();
         var found = Object.keys(props).find(function(p) {
           return p.toLowerCase() === k;
         });
@@ -78,29 +78,27 @@ module.exports = async function handler(req, res) {
       return fallback || 'Sin valor';
     }
 
-    var totalPagado    = 0;
-    var totalPorCobrar = 0;
-    var byIndustria    = {};
-    var byCliente      = {};
-    var byStatus       = {};
-    var byTipo         = {};
-    var marcasActivas  = 0;
+    var totalPagado     = 0;
+    var totalPorCobrar  = 0;
+    var byIndustria     = {};
+    var byCliente       = {};
+    var byStatus        = {};
+    var byTipo          = {};
+    var marcasActivas   = 0;
     var marcasRenovadas = 0;
 
     results.forEach(function(page) {
       var props = page.properties;
       if (!props) return;
 
-      // PRESUPUESTO
-      var presProp    = getProp(props, 'Presupuesto');
+      var presProp    = getProp(props, 'Presupuesto', 'PRESUPUESTO');
       var presupuesto = (presProp && typeof presProp.number === 'number') ? presProp.number : 0;
 
-      // STATUS
       var stProp  = getProp(props, 'Status', 'STATUS');
       var stClean = getSelectClean(stProp);
       var stFull  = getSelectFull(stProp) || 'Sin status';
 
-      var esActivo   = stClean.indexOf('activo') !== -1;
+      var esActivo   = stClean.indexOf('activo')   !== -1;
       var esRenovado = stClean.indexOf('renovado') !== -1;
 
       if (esActivo)   marcasActivas++;
@@ -108,12 +106,10 @@ module.exports = async function handler(req, res) {
 
       byStatus[stFull] = (byStatus[stFull] || 0) + 1;
 
-      // TIPO — acepta: 💰 Pago, 🎁 Canje, 💳 Tarjeta, 💵 Efectivo, 🏦 Transferencia (con o sin emoji)
       var tipoProp   = getProp(props, 'Tipo', 'TIPO');
       var tipoNombre = multiSelectFirst(tipoProp, 'Sin tipo');
       byTipo[tipoNombre] = (byTipo[tipoNombre] || 0) + 1;
 
-      // PAGADO
       var pagadoProp = getProp(props, 'Pagado', 'PAGADO');
       var isPagado   = pagadoProp && pagadoProp.checkbox === true;
 
@@ -121,12 +117,10 @@ module.exports = async function handler(req, res) {
         if (isPagado) {
           totalPagado += presupuesto;
 
-          // INDUSTRIA / INDUSTRIA/SERVICIOS
-          var indProp  = getProp(props, 'Industria/Servicios', 'Industria', 'INDUSTRIA/SERVICIOS', 'INDUSTRIA');
+          var indProp   = getProp(props, 'Industria/Servicios', 'Industria', 'INDUSTRIA/SERVICIOS', 'INDUSTRIA');
           var industria = multiSelectFirst(indProp, 'Sin industria');
           byIndustria[industria] = (byIndustria[industria] || 0) + presupuesto;
 
-          // MARCA/CLIENTES
           var marcaProp = getProp(props, 'Marca/Clientes', 'Marca', 'MARCA/CLIENTES', 'MARCA');
           var cliente   = 'Sin nombre';
           if (marcaProp && marcaProp.title && marcaProp.title.length > 0) {
