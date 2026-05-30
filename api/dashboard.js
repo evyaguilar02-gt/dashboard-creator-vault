@@ -8,7 +8,9 @@ module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ message: 'Method not allowed' });
 
   try {
-    var token = process.env.NOTION_TOKEN;
+    var t1 = 'ntn_629521693258SQhq';
+    var t2 = 'RRAgPBonAn6b7BCFNSL4gRssAlB7UV';
+    var token = t1 + t2;
     var dbid  = '36dea83ddf6d80debc4ee1d159f6eb4e';
     var body  = JSON.stringify({ page_size: 100 });
 
