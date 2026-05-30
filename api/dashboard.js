@@ -4,17 +4,14 @@ module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ message: 'Method not allowed' });
 
   try {
-    var t1 = 'ntn_62952169325';
-    var t2 = '7XNdCvR0kH4A3aeEqkiIVM8ollD7HYCM7Gx';
-    var token = t1 + t2;
-    var dbid = '36dea83ddf6d80debc4ee1d159f6eb4e';
+    var token = process.env.NOTION_TOKEN;
+    var dbid  = '36dea83ddf6d80debc4ee1d159f6eb4e';
+    var body  = JSON.stringify({ page_size: 100 });
 
-    var body = JSON.stringify({ page_size: 100 });
     var options = {
       hostname: 'api.notion.com',
       path: '/v1/databases/' + dbid + '/query',
@@ -41,14 +38,22 @@ module.exports = async function handler(req, res) {
       req2.end();
     });
 
-    if (data.status !== 200) return res.status(data.status).json({ message: data.body.message || 'Error Notion.' });
+    if (data.status !== 200) {
+      return res.status(data.status).json({ message: data.body.message || 'Error Notion.' });
+    }
 
     var results = data.body.results || [];
 
-    function getProp(props, name) {
-      var k = name.toLowerCase();
-      var found = Object.keys(props).find(function(p) { return p.toLowerCase() === k; });
-      return found ? props[found] : null;
+    // Busca columna por nombre exacto o variantes
+    function getProp(props, ...names) {
+      for (var name of names) {
+        var k = name.toLowerCase();
+        var found = Object.keys(props).find(function(p) {
+          return p.toLowerCase() === k;
+        });
+        if (found) return props[found];
+      }
+      return null;
     }
 
     function getSelectClean(prop) {
@@ -73,50 +78,62 @@ module.exports = async function handler(req, res) {
       return fallback || 'Sin valor';
     }
 
-    var totalPagado = 0;
+    var totalPagado    = 0;
     var totalPorCobrar = 0;
-    var byIndustria = {};
-    var byCliente = {};
-    var byStatus = {};
-    var byTipo = {};
-    var marcasActivas = 0;
+    var byIndustria    = {};
+    var byCliente      = {};
+    var byStatus       = {};
+    var byTipo         = {};
+    var marcasActivas  = 0;
     var marcasRenovadas = 0;
 
     results.forEach(function(page) {
       var props = page.properties;
       if (!props) return;
 
-      var presProp = getProp(props, 'Presupuesto');
+      // PRESUPUESTO
+      var presProp    = getProp(props, 'Presupuesto');
       var presupuesto = (presProp && typeof presProp.number === 'number') ? presProp.number : 0;
 
-      var stProp = getProp(props, 'Status');
+      // STATUS
+      var stProp  = getProp(props, 'Status', 'STATUS');
       var stClean = getSelectClean(stProp);
-      var stFull = getSelectFull(stProp) || 'Sin status';
-      var esActivo = stClean.indexOf('activo') !== -1;
+      var stFull  = getSelectFull(stProp) || 'Sin status';
+
+      var esActivo   = stClean.indexOf('activo') !== -1;
       var esRenovado = stClean.indexOf('renovado') !== -1;
-      if (esActivo) marcasActivas++;
+
+      if (esActivo)   marcasActivas++;
       if (esRenovado) marcasRenovadas++;
+
       byStatus[stFull] = (byStatus[stFull] || 0) + 1;
 
-      var tipoProp = getProp(props, 'Tipo');
+      // TIPO — acepta: 💰 Pago, 🎁 Canje, 💳 Tarjeta, 💵 Efectivo, 🏦 Transferencia (con o sin emoji)
+      var tipoProp   = getProp(props, 'Tipo', 'TIPO');
       var tipoNombre = multiSelectFirst(tipoProp, 'Sin tipo');
       byTipo[tipoNombre] = (byTipo[tipoNombre] || 0) + 1;
 
-      var pagadoProp = getProp(props, 'Pagado');
-      var isPagado = pagadoProp && pagadoProp.checkbox === true;
+      // PAGADO
+      var pagadoProp = getProp(props, 'Pagado', 'PAGADO');
+      var isPagado   = pagadoProp && pagadoProp.checkbox === true;
 
       if ((esActivo || esRenovado) && presupuesto > 0) {
         if (isPagado) {
           totalPagado += presupuesto;
-          var indProp = getProp(props, 'Industria');
+
+          // INDUSTRIA / INDUSTRIA/SERVICIOS
+          var indProp  = getProp(props, 'Industria/Servicios', 'Industria', 'INDUSTRIA/SERVICIOS', 'INDUSTRIA');
           var industria = multiSelectFirst(indProp, 'Sin industria');
           byIndustria[industria] = (byIndustria[industria] || 0) + presupuesto;
-          var marcaProp = getProp(props, 'Marca');
-          var cliente = 'Sin nombre';
+
+          // MARCA/CLIENTES
+          var marcaProp = getProp(props, 'Marca/Clientes', 'Marca', 'MARCA/CLIENTES', 'MARCA');
+          var cliente   = 'Sin nombre';
           if (marcaProp && marcaProp.title && marcaProp.title.length > 0) {
             cliente = marcaProp.title[0].plain_text;
           }
           byCliente[cliente] = (byCliente[cliente] || 0) + presupuesto;
+
         } else {
           totalPorCobrar += presupuesto;
         }
@@ -131,15 +148,15 @@ module.exports = async function handler(req, res) {
 
     var now = new Date();
     return res.status(200).json({
-      totalPagado: totalPagado,
-      totalPorCobrar: totalPorCobrar,
-      marcasActivas: marcasActivas,
+      totalPagado:     totalPagado,
+      totalPorCobrar:  totalPorCobrar,
+      marcasActivas:   marcasActivas,
       marcasRenovadas: marcasRenovadas,
-      totalMarcas: results.length,
-      byIndustria: sort(byIndustria),
-      byCliente: sort(byCliente),
-      byStatus: sort(byStatus),
-      byTipo: sort(byTipo),
+      totalMarcas:     results.length,
+      byIndustria:     sort(byIndustria),
+      byCliente:       sort(byCliente),
+      byStatus:        sort(byStatus),
+      byTipo:          sort(byTipo),
       mes: now.toLocaleString('es-ES', { month: 'long', year: 'numeric' })
     });
 
