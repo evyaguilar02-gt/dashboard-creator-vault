@@ -1,0 +1,8 @@
+{
+  "functions": {
+    "api/dashboard.js": {
+      "memory": 128,
+      "maxDuration": 10
+    }
+  }
+}
