@@ -8,10 +8,14 @@ module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ message: 'Method not allowed' });
 
   try {
-    var t1 = 'ntn_629521693258SQhq';
-    var t2 = 'RRAgPBonAn6b7BCFNSL4gRssAlB7UV';
-    var token = t1 + t2;
-    var dbid = '36eea83ddf6d80538053e6c7ad476a0e';
+    var body_parsed = req.body || {};
+    var token = body_parsed.token;
+    var dbid  = (body_parsed.dbid || '').replace(/-/g, '');
+
+    if (!token || !dbid) {
+      return res.status(400).json({ message: 'Token y Database ID requeridos.' });
+    }
+
     var body  = JSON.stringify({ page_size: 100 });
 
     var options = {
