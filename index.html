@@ -8,12 +8,19 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0f0e0c;color:#e8e2d8;padding:16px;min-height:100vh}
 .wrap{max-width:860px;margin:0 auto}
-.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
 .header-title{font-size:12px;font-weight:600;color:#8a8070;text-transform:uppercase;letter-spacing:.08em}
 .header-right{display:flex;align-items:center;gap:10px}
 .header-date{font-size:11px;color:#524d44;font-family:monospace}
 .refresh-btn{background:none;border:1px solid rgba(196,160,90,0.3);color:#c4a05a;font-size:11px;padding:5px 14px;border-radius:6px;cursor:pointer;font-family:inherit}
 .refresh-btn:hover{background:rgba(196,160,90,0.1)}
+
+/* TABS DE MES */
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:2px 0 10px;margin-bottom:6px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;background:#1c1a16;border:1px solid rgba(255,255,255,0.07);color:#8a8070;font-size:12px;font-weight:600;padding:7px 16px;border-radius:20px;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .15s}
+.tab:hover{border-color:rgba(196,160,90,0.3);color:#c8bfa8}
+.tab.active{background:linear-gradient(180deg,rgba(196,160,90,0.22),rgba(196,160,90,0.1));border-color:rgba(196,160,90,0.55);color:#e2c880}
 
 /* KPIs — 3 columnas web, 2 columnas móvil */
 .kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
@@ -46,6 +53,32 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .donut-name{flex:1;color:#c8bfa8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .donut-val{color:#e2c880;font-family:monospace;font-size:11px;white-space:nowrap}
 
+/* GRÁFICA DE BARRAS — INGRESOS POR MES */
+.bars-card{background:#1c1a16;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px;margin-bottom:16px}
+.bars-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px}
+.bars-total{font-family:monospace;font-size:13px;color:#e2c880}
+.bars-total span{color:#524d44;font-size:10px;text-transform:uppercase;letter-spacing:.08em;margin-right:6px}
+.bc{position:relative}
+.bc-plot{position:relative;height:170px;margin-left:44px;border-bottom:1px solid rgba(255,255,255,0.1)}
+.bc-gridline{position:absolute;left:0;right:0;height:1px;background:rgba(255,255,255,0.045)}
+.bc-gridlabel{position:absolute;left:-44px;width:38px;text-align:right;transform:translateY(-50%);font-size:9px;font-family:monospace;color:#524d44}
+.bc-bars{position:absolute;inset:0;display:flex;align-items:flex-end;gap:8px;padding:0 2px}
+.bc-col{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;cursor:pointer;position:relative;min-width:0}
+.bc-stack{width:66%;max-width:34px;min-height:2px;border-radius:5px 5px 0 0;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;transition:filter .15s,transform .15s}
+.bc-col:hover .bc-stack{filter:brightness(1.15)}
+.bc-porcobrar{background:repeating-linear-gradient(45deg,rgba(200,168,68,0.55),rgba(200,168,68,0.55) 4px,rgba(200,168,68,0.35) 4px,rgba(200,168,68,0.35) 8px)}
+.bc-cobrado{background:linear-gradient(180deg,#e2c880,#c4a05a)}
+.bc-col.sel .bc-stack{filter:brightness(1.2);box-shadow:0 0 0 2px rgba(226,200,128,0.5)}
+.bc-tip{position:absolute;bottom:calc(100% + 6px);background:#26231d;border:1px solid rgba(196,160,90,0.4);color:#e2c880;font-family:monospace;font-size:10px;padding:3px 7px;border-radius:6px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .12s;z-index:5}
+.bc-col:hover .bc-tip,.bc-col.sel .bc-tip{opacity:1}
+.bc-xlabels{display:flex;gap:8px;margin-left:44px;padding:8px 2px 0}
+.bc-xlabel{flex:1;text-align:center;font-size:10px;color:#8a8070;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.bc-xlabel.sel{color:#e2c880;font-weight:600}
+.bars-legend{display:flex;gap:16px;margin-top:12px;padding-left:44px}
+.bars-legend .lg{display:flex;align-items:center;gap:6px;font-size:11px;color:#8a8070}
+.lg-dot{width:10px;height:10px;border-radius:3px}
+.bars-empty{text-align:center;padding:26px 0;color:#524d44;font-size:12px}
+
 /* TOP MARCAS */
 .client-row{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);gap:6px}
 .client-row:last-child{border-bottom:none}
@@ -57,12 +90,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .client-amount{font-size:12px;color:#e2c880;font-family:monospace;white-space:nowrap}
 
 /* TOP CAMPAÑAS */
-.camp-row-item{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);gap:6px}
+.camp-row-item{display:flex;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04);gap:8px}
 .camp-row-item:last-child{border-bottom:none}
-.camp-name{flex:1;font-size:12px;color:#e8e2d8;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.camp-meta{font-size:10px;color:#524d44;white-space:nowrap}
-.pagado-si{font-size:10px;padding:2px 6px;border-radius:8px;font-weight:600;background:rgba(74,124,89,0.2);color:#6db88a;white-space:nowrap}
-.pagado-no{font-size:10px;padding:2px 6px;border-radius:8px;font-weight:600;background:rgba(200,168,68,0.15);color:#c8a844;white-space:nowrap}
+.camp-name{font-size:12px;color:#e8e2d8;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.camp-meta{font-size:10px;color:#524d44;white-space:nowrap;margin-top:2px}
+.camp-badges{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.pagado-si{font-size:10px;padding:2px 7px;border-radius:8px;font-weight:600;background:rgba(74,124,89,0.2);color:#6db88a;white-space:nowrap}
+.pagado-no{font-size:10px;padding:2px 7px;border-radius:8px;font-weight:600;background:rgba(200,168,68,0.15);color:#c8a844;white-space:nowrap}
 
 /* CAMPAÑAS WEB — tabla completa */
 .camp-full{background:#1c1a16;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px;margin-bottom:16px}
@@ -78,27 +112,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 /* MÓVIL */
 @media(max-width:600px){
-  /* Fila 1: Cobrado + Por cobrar */
   .kpi-row{grid-template-columns:1fr 1fr}
-  /* Activas ocupa todo el ancho en web pero en móvil va en su propia fila */
   .kpi-value{font-size:20px}
   .kpi-card{padding:10px 12px}
-  /* Fila 2: Activas + Tipo → two-col */
-  /* Fila 3: Status + Industria → two-col */
-  /* Fila 4: Top marcas + Top campañas → two-col */
   .two-col{grid-template-columns:1fr 1fr}
   .donut-inner{flex-direction:column;align-items:flex-start;gap:4px}
   .donut-card{padding:10px}
   .client-card{padding:10px}
   .camp-card-wrap{padding:10px}
-  /* Ocultar tabla web de campañas en móvil */
   .camp-full{display:none}
+  .bc-plot{margin-left:34px}
+  .bc-gridlabel{left:-34px;width:30px;font-size:8px}
+  .bc-xlabels,.bars-legend{margin-left:34px}
+  .bc-xlabel{font-size:9px}
   body{padding:8px}
 }
 @media(min-width:601px){
-  /* En web ocultar la fila móvil de activas+tipo */
   .row-activas-tipo-mobile{display:none}
-  /* Ocultar last two-col de marcas+campañas en móvil */
 }
 </style>
 </head>
@@ -111,6 +141,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <button class="refresh-btn" onclick="cargarDatos()">↻ Actualizar</button>
     </div>
   </div>
+  <div id="tabs" class="tabs"></div>
   <div id="content"><div class="loading">↻ Cargando datos desde Notion...</div></div>
   <div class="footer">🏛️ The Creator Vault · Evelyn Aguilar · @evelynaguilar_gt</div>
   <div class="footer" style="margin-top:3px;font-size:8px;opacity:0.6">© 2026 Evelyn Aguilar · Prohibida la venta, reproducción o redistribución sin autorización expresa.</div>
@@ -121,16 +152,25 @@ var urlParams=new URLSearchParams(window.location.search);
 var USER_TOKEN=urlParams.get('token')||'';
 var USER_DBID=urlParams.get('dbid')||'';
 
+var PAYLOAD=null;   // respuesta completa de la API
+var MES_SEL='Todos'; // tab seleccionado
+
 function fmt(n,s){if(!n||n===0)return (s||'$')+'0';return (s||'$')+Number(n).toLocaleString('es-GT');}
+function abrevMes(m){if(!m)return '';if(m==='Sin mes')return 'S/M';return m.substring(0,3);}
 
 function badge(etiqueta){
   var e=(etiqueta||'').toLowerCase();
-  var st=e.indexOf('renovado')!==-1?'background:rgba(96,152,208,0.2);color:#6098d0':
-         e.indexOf('finalizado')!==-1||e.indexOf('cerrado')!==-1?'background:rgba(196,160,90,0.15);color:#e2c880':
-         'background:rgba(74,124,89,0.2);color:#6db88a';
+  var st;
+  if(e.indexOf('renovado')!==-1)               st='background:rgba(96,152,208,0.18);color:#6098d0';
+  else if(e.indexOf('activo')!==-1)            st='background:rgba(74,124,89,0.2);color:#6db88a';
+  else if(e.indexOf('finalizado')!==-1||e.indexOf('cerrado')!==-1) st='background:rgba(196,160,90,0.15);color:#e2c880';
+  else if(e.indexOf('prospecto')!==-1)         st='background:rgba(168,126,212,0.18);color:#a87ed4';
+  else if(e.indexOf('negocia')!==-1)           st='background:rgba(200,168,68,0.15);color:#c8a844';
+  else                                         st='background:rgba(138,128,112,0.15);color:#8a8070';
   return '<span class="client-badge" style="'+st+'">'+(etiqueta||'Activo')+'</span>';
 }
 
+/* ---------- DONUTS ---------- */
 function donut(data,total,size){
   size=size||80;var cx=size/2,cy=size/2,r=size*0.38,stroke=size*0.14;
   var circ=2*Math.PI*r,offset=0,paths='';
@@ -141,7 +181,6 @@ function donut(data,total,size){
   });
   return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'"><circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="'+stroke+'"/>'+paths+'</svg>';
 }
-
 function donutCard(title, data){
   var total=data.reduce(function(a,i){return a+i.total},0);
   var html='<div class="donut-card"><div class="sec-title">'+title+'</div><div class="donut-inner">'+donut(data,total,80)+'<div class="donut-legend">';
@@ -149,7 +188,6 @@ function donutCard(title, data){
   html+='</div></div></div>';
   return html;
 }
-
 function donutCardMonto(title, data, s){
   var total=data.reduce(function(a,i){return a+i.total},0);
   var html='<div class="donut-card"><div class="sec-title">'+title+'</div><div class="donut-inner">'+donut(data,total,80)+'<div class="donut-legend">';
@@ -158,70 +196,159 @@ function donutCardMonto(title, data, s){
   return html;
 }
 
+/* ---------- GRÁFICA DE BARRAS: INGRESOS POR MES ---------- */
+function niceCeil(v){
+  if(v<=0)return 100;
+  var pow=Math.pow(10,Math.floor(Math.log10(v)));
+  var n=v/pow;
+  var m=n<=1?1:n<=2?2:n<=5?5:10;
+  return m*pow;
+}
+function barsCard(series, selMes, s){
+  var html='<div class="bars-card">';
+  html+='<div class="bars-head"><div class="sec-title" style="margin:0;flex:1">📈 Ingresos por mes</div>';
+  var totalAll=series.reduce(function(a,m){return a+m.cobrado+m.porCobrar},0);
+  html+='<div class="bars-total"><span>Total año</span>'+fmt(totalAll,s)+'</div></div>';
+
+  if(!series||series.length===0){
+    html+='<div class="bars-empty">Sin campañas con mes asignado todavía.</div></div>';
+    return html;
+  }
+
+  var maxV=niceCeil(Math.max.apply(null,series.map(function(m){return m.cobrado+m.porCobrar})));
+
+  // gridlines + labels (0,25,50,75,100%)
+  var grid='';
+  for(var g=0;g<=4;g++){
+    var pct=g/4;var val=maxV*pct;var bottom=(pct*100);
+    grid+='<div class="bc-gridline" style="bottom:'+bottom+'%"></div>';
+    grid+='<div class="bc-gridlabel" style="bottom:'+bottom+'%">'+fmt(Math.round(val),s)+'</div>';
+  }
+
+  // bars
+  var bars='';
+  series.forEach(function(m){
+    var total=m.cobrado+m.porCobrar;
+    var stackH=maxV>0?(total/maxV*100):0;
+    var cobH=total>0?(m.cobrado/total*100):0;
+    var pcH=total>0?(m.porCobrar/total*100):0;
+    var isSel=(m.mes===selMes);
+    var tip=fmt(m.cobrado,s)+' cobrado'+(m.porCobrar>0?' · '+fmt(m.porCobrar,s)+' x cobrar':'');
+    bars+='<div class="bc-col'+(isSel?' sel':'')+'" onclick="seleccionarMes(\''+m.mes.replace(/'/g,"\\'")+'\')">'
+        +'<div class="bc-tip">'+tip+'</div>'
+        +'<div class="bc-stack" style="height:'+stackH+'%">'
+          +(pcH>0?'<div class="bc-porcobrar" style="height:'+pcH+'%"></div>':'')
+          +(cobH>0?'<div class="bc-cobrado" style="height:'+cobH+'%"></div>':'')
+        +'</div>'
+      +'</div>';
+  });
+
+  // x labels
+  var xlab='';
+  series.forEach(function(m){
+    xlab+='<div class="bc-xlabel'+(m.mes===selMes?' sel':'')+'">'+abrevMes(m.mes)+'</div>';
+  });
+
+  html+='<div class="bc"><div class="bc-plot">'+grid+'<div class="bc-bars">'+bars+'</div></div>'
+      +'<div class="bc-xlabels">'+xlab+'</div>'
+      +'<div class="bars-legend">'
+        +'<div class="lg"><span class="lg-dot" style="background:linear-gradient(180deg,#e2c880,#c4a05a)"></span>Cobrado</div>'
+        +'<div class="lg"><span class="lg-dot" style="background:repeating-linear-gradient(45deg,rgba(200,168,68,0.55),rgba(200,168,68,0.55) 3px,rgba(200,168,68,0.3) 3px,rgba(200,168,68,0.3) 6px)"></span>Por cobrar</div>'
+      +'</div></div></div>';
+  return html;
+}
+
+/* ---------- TOP MARCAS ---------- */
 function topMarcasCard(data, s){
-  var top3=data.slice(0,3);var maxC=top3[0].total;
+  var top3=data.slice(0,3);var maxC=top3.length?top3[0].total:0;
   var html='<div class="client-card"><div class="sec-title">👤 Top marcas</div>';
   top3.forEach(function(item,i){var pct=maxC>0?Math.round(item.total/maxC*100):0;var sim=item.simbolo||s;html+='<div class="client-row"><div class="client-rank">'+(i+1)+'</div><div class="client-name">'+item.nombre+'</div>'+badge(item.etiqueta)+'<div class="client-bar-wrap"><div class="client-bar-fill" style="width:'+pct+'%"></div></div><div class="client-amount">'+fmt(item.total,sim)+'</div></div>';});
-  if(data.length>3)html+='<div style="text-align:center;padding-top:8px;font-size:10px;color:#524d44">+'+( data.length-3)+' más</div>';
+  if(data.length>3)html+='<div style="text-align:center;padding-top:8px;font-size:10px;color:#524d44">+'+(data.length-3)+' más</div>';
   html+='</div>';
   return html;
 }
 
+/* ---------- TOP CAMPAÑAS (con badge de status + pagado) ---------- */
 function topCampCard(data, s){
   var top3=data.slice(0,3);
   var html='<div class="camp-card-wrap"><div class="sec-title">🎯 Top campañas</div>';
   top3.forEach(function(c){
     html+='<div class="camp-row-item">';
-    html+='<div style="flex:1;min-width:0"><div class="camp-name">'+c.campana+'</div><div class="camp-meta">'+c.marca+' · '+c.mes+'</div></div>';
-    html+='<div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px"><span style="font-family:monospace;color:#e2c880;font-size:11px">'+fmt(c.monto,c.simbolo||s)+'</span><span class="'+(c.pagado?'pagado-si':'pagado-no')+'">'+(c.pagado?'✓ Pagado':'⏳ Pendiente')+'</span></div>';
+    html+='<div style="flex:1;min-width:0">'
+        +'<div class="camp-name">'+c.campana+'</div>'
+        +'<div class="camp-meta">'+c.marca+' · '+c.mes+'</div>'
+        +'<div class="camp-badges">'+badge(c.etiqueta)+'<span class="'+(c.pagado?'pagado-si':'pagado-no')+'">'+(c.pagado?'✓ Pagado':'⏳ Pendiente')+'</span></div>'
+      +'</div>';
+    html+='<div style="flex-shrink:0;text-align:right"><span style="font-family:monospace;color:#e2c880;font-size:12px">'+fmt(c.monto,c.simbolo||s)+'</span></div>';
     html+='</div>';
   });
+  if(top3.length===0)html+='<div style="padding:14px 0;text-align:center;font-size:11px;color:#524d44">Sin campañas este mes.</div>';
   html+='</div>';
   return html;
 }
 
-function render(data){
-  var s=data.simbolo||'$';
+/* ---------- TABS ---------- */
+function renderTabs(){
+  if(!PAYLOAD){document.getElementById('tabs').innerHTML='';return;}
+  var meses=PAYLOAD.meses||[];
+  var lista=['Todos'].concat(meses);
+  var html='';
+  lista.forEach(function(m){
+    var label=(m==='Todos')?'Todos':m;
+    html+='<button class="tab'+(m===MES_SEL?' active':'')+'" onclick="seleccionarMes(\''+m.replace(/'/g,"\\'")+'\')">'+label+'</button>';
+  });
+  document.getElementById('tabs').innerHTML=html;
+}
+
+function seleccionarMes(m){
+  if(!PAYLOAD)return;
+  if(m!=='Todos' && !(PAYLOAD.porMes && PAYLOAD.porMes[m])) m='Todos';
+  MES_SEL=m;
+  renderTabs();
+  render(PAYLOAD.porMes[MES_SEL]);
+}
+
+/* ---------- RENDER PRINCIPAL ---------- */
+function render(bundle){
+  var s=PAYLOAD.simbolo||'$';
+  var mesLabel=(MES_SEL==='Todos')?'Acumulado':MES_SEL;
   var html='';
 
-  // FILA 1 — Cobrado + Por cobrar (web: +Activas en 3ra col, móvil: solo 2)
+  // FILA 1 — Cobrado + Por cobrar (+ Activas en web)
   html+='<div class="kpi-row">';
-  html+='<div class="kpi-card gold"><div class="kpi-label">💵 Cobrado · '+(data.mes||'Este mes')+'</div><div class="kpi-value gold">'+fmt(data.totalPagado,s)+'</div><div class="kpi-sub"><span class="trend-neutral">Pagado y confirmado</span></div></div>';
-  html+='<div class="kpi-card amber"><div class="kpi-label">⏳ Por cobrar</div><div class="kpi-value amber">'+fmt(data.totalPorCobrar,s)+'</div><div class="kpi-sub"><span class="trend-neutral">Activas sin pagar</span></div></div>';
-  // 3ra card — visible en web, oculta en móvil
-  html+='<div class="kpi-card" style="display:var(--kpi3-display,block)"><div class="kpi-label">✅ Activas · Renovadas · Finalizadas</div><div class="kpi-value green">'+((data.marcasActivas||0)+(data.marcasRenovadas||0)+(data.marcasFinalizado||0))+'</div><div class="kpi-sub"><span class="trend-neutral">'+(data.marcasActivas||0)+' activas · '+(data.marcasRenovadas||0)+' renovadas · '+(data.marcasFinalizado||0)+' finalizadas</span></div></div>';
+  html+='<div class="kpi-card gold"><div class="kpi-label">💵 Cobrado · '+mesLabel+'</div><div class="kpi-value gold">'+fmt(bundle.totalPagado,s)+'</div><div class="kpi-sub"><span class="trend-neutral">Pagado y confirmado</span></div></div>';
+  html+='<div class="kpi-card amber"><div class="kpi-label">⏳ Por cobrar</div><div class="kpi-value amber">'+fmt(bundle.totalPorCobrar,s)+'</div><div class="kpi-sub"><span class="trend-neutral">Activas sin pagar</span></div></div>';
+  html+='<div class="kpi-card"><div class="kpi-label">✅ Activas · Renovadas · Finalizadas</div><div class="kpi-value green">'+((bundle.marcasActivas||0)+(bundle.marcasRenovadas||0)+(bundle.marcasFinalizado||0))+'</div><div class="kpi-sub"><span class="trend-neutral">'+(bundle.marcasActivas||0)+' activas · '+(bundle.marcasRenovadas||0)+' renovadas · '+(bundle.marcasFinalizado||0)+' finalizadas</span></div></div>';
   html+='</div>';
 
-  // FILA 2 MÓVIL — Activas + Tipo (solo visible en móvil)
+  // FILA 2 MÓVIL — Activas + Tipo
   var tipoHtml='';
-  if(data.byTipo&&data.byTipo.length>0) tipoHtml=donutCard('💡 Tipo',data.byTipo);
-
+  if(bundle.byTipo&&bundle.byTipo.length>0) tipoHtml=donutCard('💡 Tipo',bundle.byTipo);
   html+='<div class="two-col" id="row-activas-tipo">';
-  // Activas — solo en móvil esta posición
-  html+='<div class="kpi-card" id="kpi-activas-mob"><div class="kpi-label">✅ Activas · Renov · Final</div><div class="kpi-value green">'+((data.marcasActivas||0)+(data.marcasRenovadas||0)+(data.marcasFinalizado||0))+'</div><div class="kpi-sub"><span class="trend-neutral">'+(data.marcasActivas||0)+' · '+(data.marcasRenovadas||0)+' · '+(data.marcasFinalizado||0)+'</span></div></div>';
+  html+='<div class="kpi-card" id="kpi-activas-mob"><div class="kpi-label">✅ Activas · Renov · Final</div><div class="kpi-value green">'+((bundle.marcasActivas||0)+(bundle.marcasRenovadas||0)+(bundle.marcasFinalizado||0))+'</div><div class="kpi-sub"><span class="trend-neutral">'+(bundle.marcasActivas||0)+' · '+(bundle.marcasRenovadas||0)+' · '+(bundle.marcasFinalizado||0)+'</span></div></div>';
   html+=tipoHtml;
   html+='</div>';
 
+  // GRÁFICA DE BARRAS — Ingresos por mes (global, resalta el mes activo)
+  html+=barsCard(PAYLOAD.ingresosPorMes||[], MES_SEL, s);
+
   // FILA 3 — Por status + Por industria
   html+='<div class="two-col">';
-  if(data.byStatus&&data.byStatus.length>0) html+=donutCard('📌 Por status',data.byStatus);
-  if(data.byIndustria&&data.byIndustria.length>0) html+=donutCardMonto('🏭 Por industria',data.byIndustria,s);
+  if(bundle.byStatus&&bundle.byStatus.length>0) html+=donutCard('📌 Por status',bundle.byStatus);
+  if(bundle.byIndustria&&bundle.byIndustria.length>0) html+=donutCardMonto('🏭 Por industria',bundle.byIndustria,s);
   html+='</div>';
-
-  // FILA 4 WEB — Tipo (solo web) ya fue en fila 2 web
-  // En web la fila 2 debe ser Tipo+Industria — reordenamos con CSS
 
   // FILA 4 — Top marcas + Top campañas
   html+='<div class="two-col">';
-  if(data.byCliente&&data.byCliente.length>0) html+=topMarcasCard(data.byCliente,s);
-  if(data.campanas&&data.campanas.length>0) html+=topCampCard(data.campanas,s);
+  html+=topMarcasCard(bundle.byCliente||[],s);
+  html+=topCampCard(bundle.campanas||[],s);
   html+='</div>';
 
-  // TABLA COMPLETA DE CAMPAÑAS — solo web
-  if(data.campanas&&data.campanas.length>0){
+  // TABLA COMPLETA — solo web
+  if(bundle.campanas&&bundle.campanas.length>0){
     html+='<div class="camp-full"><div class="sec-title">🎯 Todas las campañas</div>';
     html+='<table class="camp-table"><thead><tr><th>Campaña</th><th>Marca</th><th>Mes</th><th>Monto</th><th>Status</th><th>Pagado</th></tr></thead><tbody>';
-    data.campanas.forEach(function(c){
+    bundle.campanas.forEach(function(c){
       html+='<tr><td style="color:#e8e2d8;font-weight:500">'+c.campana+'</td><td style="color:#c8bfa8">'+c.marca+'</td><td style="color:#8a8070">'+c.mes+'</td><td style="font-family:monospace;color:#e2c880">'+fmt(c.monto,c.simbolo||s)+'</td><td>'+badge(c.etiqueta)+'</td><td><span class="'+(c.pagado?'pagado-si':'pagado-no')+'">'+(c.pagado?'✓ Pagado':'⏳ Pendiente')+'</span></td></tr>';
     });
     html+='</tbody></table></div>';
@@ -229,34 +356,39 @@ function render(data){
 
   document.getElementById('content').innerHTML=html;
   document.getElementById('fecha-header').textContent=new Date().toLocaleString('es-GT',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
-
-  // Aplicar lógica responsive via JS
   aplicarResponsive();
 }
 
 function aplicarResponsive(){
   var isMobile=window.innerWidth<=600;
-  // 3ra KPI card — oculta en móvil (aparece en fila activas+tipo)
   var kpi3=document.querySelector('.kpi-row .kpi-card:nth-child(3)');
   if(kpi3) kpi3.style.display=isMobile?'none':'block';
-  // Fila activas+tipo — solo en móvil
   var rowAt=document.getElementById('row-activas-tipo');
   if(rowAt) rowAt.style.display=isMobile?'grid':'none';
 }
-
 window.addEventListener('resize',function(){
-  if(document.getElementById('content').innerHTML.indexOf('loading')===-1) aplicarResponsive();
+  if(PAYLOAD && document.getElementById('content').innerHTML.indexOf('loading')===-1) aplicarResponsive();
 });
 
+/* ---------- CARGA DE DATOS ---------- */
 function cargarDatos(){
   if(!USER_TOKEN||!USER_DBID){
+    document.getElementById('tabs').innerHTML='';
     document.getElementById('content').innerHTML='<div class="error-box">⚠️ Dashboard no configurado. Ve a <a href="https://vault-config.vercel.app" style="color:#c4a05a">vault-config.vercel.app</a> para configurar.</div>';
     return;
   }
   document.getElementById('content').innerHTML='<div class="loading">↻ Actualizando...</div>';
   fetch('/api/dashboard',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:USER_TOKEN,dbid:USER_DBID})})
   .then(function(res){return res.json();})
-  .then(function(data){if(data.message){document.getElementById('content').innerHTML='<div class="error-box">Error: '+data.message+'</div>';return;}render(data);})
+  .then(function(data){
+    if(data.message){document.getElementById('content').innerHTML='<div class="error-box">Error: '+data.message+'</div>';return;}
+    PAYLOAD=data;
+    // Tab por defecto: mes actual si tiene datos; si no, "Todos".
+    var meses=data.meses||[];
+    MES_SEL=(data.mesActual && meses.indexOf(data.mesActual)!==-1)?data.mesActual:'Todos';
+    renderTabs();
+    render(PAYLOAD.porMes[MES_SEL]);
+  })
   .catch(function(err){document.getElementById('content').innerHTML='<div class="error-box">Error: '+err.message+'</div>';});
 }
 cargarDatos();
