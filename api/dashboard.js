@@ -16,7 +16,8 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ message: 'Token y Database ID requeridos.' });
     }
 
-    var body = JSON.stringify({ page_size: 100 });
+    var body  = JSON.stringify({ page_size: 100 });
+
     var options = {
       hostname: 'api.notion.com',
       path: '/v1/databases/' + dbid + '/query',
@@ -83,31 +84,48 @@ module.exports = async function handler(req, res) {
       return fallback || 'Sin valor';
     }
 
+    var CURRENCY_SYMBOLS = {
+      'usd': '$', 'gtq': 'Q', 'mxn': 'MX$',
+      'eur': '€', 'cop': 'COP$', 'pen': 'S/',
+      'clp': 'CLP$', 'ars': 'AR$'
+    };
+
     var totalPagado      = 0;
     var totalPorCobrar   = 0;
     var byIndustria      = {};
-    var byCliente        = {};
-    var byClienteEtiqueta = {};
+    var byClienteMap     = {};
+    var byClienteEtiq    = {};
+    var byClienteSimb    = {};
     var byStatus         = {};
     var byTipo           = {};
     var marcasActivas    = 0;
     var marcasRenovadas  = 0;
     var marcasFinalizado = 0;
+    var monedaGlobal     = '$';
 
     results.forEach(function(page) {
       var props = page.properties;
       if (!props) return;
 
-      var presProp    = getProp(props, 'Monto', 'MONTO', 'Presupuesto', 'PRESUPUESTO');
+      // Monto — acepta Presupuesto como nombre actual
+      var presProp    = getProp(props, 'Presupuesto', 'PRESUPUESTO', 'Monto', 'MONTO');
       var presupuesto = (presProp && typeof presProp.number === 'number') ? presProp.number : 0;
 
-      var stProp  = getProp(props, 'Status', 'STATUS');
-      var stClean = getSelectClean(stProp);
-      var stFull  = getSelectFull(stProp) || 'Sin status';
+      // Moneda — columna opcional, default $
+      var monedaProp = getProp(props, 'Moneda', 'MONEDA', 'Currency');
+      var moneda     = monedaProp ? multiSelectFirst(monedaProp, 'USD') : 'USD';
+      var simbolo    = CURRENCY_SYMBOLS[moneda.toLowerCase()] || moneda + ' ';
+      if (simbolo !== '$') monedaGlobal = simbolo;
+
+      // Status
+      var stProp   = getProp(props, 'Status', 'STATUS');
+      var stClean  = getSelectClean(stProp);
+      var stFull   = getSelectFull(stProp) || 'Sin status';
 
       var esActivo     = stClean.indexOf('activo')     !== -1;
       var esRenovado   = stClean.indexOf('renovado')   !== -1;
-      var esFinalizado = stClean.indexOf('finalizado') !== -1 || stClean.indexOf('cerrado') !== -1;
+      var esFinalizado = stClean.indexOf('finalizado') !== -1 ||
+                         stClean.indexOf('cerrado')    !== -1;
 
       if (esActivo)     marcasActivas++;
       if (esRenovado)   marcasRenovadas++;
@@ -115,10 +133,14 @@ module.exports = async function handler(req, res) {
 
       byStatus[stFull] = (byStatus[stFull] || 0) + 1;
 
+      // Tipo — solo activo, renovado o finalizado
       var tipoProp   = getProp(props, 'Tipo', 'TIPO');
       var tipoNombre = multiSelectFirst(tipoProp, 'Sin tipo');
-      byTipo[tipoNombre] = (byTipo[tipoNombre] || 0) + 1;
+      if (esActivo || esRenovado || esFinalizado) {
+        byTipo[tipoNombre] = (byTipo[tipoNombre] || 0) + 1;
+      }
 
+      // Pagado
       var pagadoProp = getProp(props, 'Pagado', 'PAGADO');
       var isPagado   = pagadoProp && pagadoProp.checkbox === true;
 
@@ -126,18 +148,21 @@ module.exports = async function handler(req, res) {
         if (isPagado) {
           totalPagado += presupuesto;
 
+          // Industria
           var indProp   = getProp(props, 'Industria/Servicios', 'Industria', 'INDUSTRIA/SERVICIOS', 'INDUSTRIA');
           var industria = multiSelectFirst(indProp, 'Sin industria');
           byIndustria[industria] = (byIndustria[industria] || 0) + presupuesto;
 
+          // Cliente
           var marcaProp = getProp(props, 'Marca/Clientes', 'Marca', 'MARCA/CLIENTES', 'MARCA');
           var cliente   = 'Sin nombre';
           if (marcaProp && marcaProp.title && marcaProp.title.length > 0) {
             cliente = marcaProp.title[0].plain_text;
           }
-          byCliente[cliente] = (byCliente[cliente] || 0) + presupuesto;
-          var etiqueta = esActivo ? 'Activo' : esRenovado ? 'Renovado' : 'Finalizado';
-          byClienteEtiqueta[cliente] = etiqueta;
+          byClienteMap[cliente]  = (byClienteMap[cliente] || 0) + presupuesto;
+          byClienteSimb[cliente] = simbolo;
+          byClienteEtiq[cliente] = esActivo ? 'Activo' :
+                                   esRenovado ? 'Renovado' : 'Finalizado';
 
         } else {
           totalPorCobrar += presupuesto;
@@ -151,11 +176,12 @@ module.exports = async function handler(req, res) {
         .map(function(e) { return { nombre: e[0], total: e[1] }; });
     };
 
-    var byClienteConEtiqueta = sort(byCliente).map(function(c) {
+    var byCliente = sort(byClienteMap).map(function(c) {
       return {
         nombre:   c.nombre,
         total:    c.total,
-        etiqueta: byClienteEtiqueta[c.nombre] || 'Activo'
+        etiqueta: byClienteEtiq[c.nombre] || 'Activo',
+        simbolo:  byClienteSimb[c.nombre] || '$'
       };
     });
 
@@ -167,8 +193,9 @@ module.exports = async function handler(req, res) {
       marcasRenovadas:  marcasRenovadas,
       marcasFinalizado: marcasFinalizado,
       totalMarcas:      results.length,
+      simbolo:          monedaGlobal,
       byIndustria:      sort(byIndustria),
-      byCliente:        byClienteConEtiqueta,
+      byCliente:        byCliente,
       byStatus:         sort(byStatus),
       byTipo:           sort(byTipo),
       mes: now.toLocaleString('es-ES', { month: 'long', year: 'numeric' })
