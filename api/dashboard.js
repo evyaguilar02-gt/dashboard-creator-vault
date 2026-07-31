@@ -90,6 +90,9 @@ module.exports = async function handler(req, res) {
       'clp': 'CLP$', 'ars': 'AR$'
     };
 
+    // Prioridad de etiqueta: Renovado > Activo > Finalizado
+    var ETIQ_PRIO = { 'Renovado': 3, 'Activo': 2, 'Finalizado': 1 };
+
     var totalPagado      = 0;
     var totalPorCobrar   = 0;
     var byIndustria      = {};
@@ -98,27 +101,24 @@ module.exports = async function handler(req, res) {
     var byClienteSimb    = {};
     var byStatus         = {};
     var byTipo           = {};
+    var marcasContadas   = {};
     var marcasActivas    = 0;
-var marcasRenovadas  = 0;
-var marcasFinalizado = 0;
-var marcasContadas   = {}
+    var marcasRenovadas  = 0;
+    var marcasFinalizado = 0;
     var monedaGlobal     = '$';
 
     results.forEach(function(page) {
       var props = page.properties;
       if (!props) return;
 
-      // Monto — acepta Presupuesto como nombre actual
       var presProp    = getProp(props, 'Presupuesto', 'PRESUPUESTO', 'Monto', 'MONTO');
       var presupuesto = (presProp && typeof presProp.number === 'number') ? presProp.number : 0;
 
-      // Moneda — columna opcional, default $
       var monedaProp = getProp(props, 'Moneda', 'MONEDA', 'Currency');
       var moneda     = monedaProp ? multiSelectFirst(monedaProp, 'USD') : 'USD';
       var simbolo    = CURRENCY_SYMBOLS[moneda.toLowerCase()] || moneda + ' ';
       if (simbolo !== '$') monedaGlobal = simbolo;
 
-      // Status
       var stProp   = getProp(props, 'Status', 'STATUS');
       var stClean  = getSelectClean(stProp);
       var stFull   = getSelectFull(stProp) || 'Sin status';
@@ -128,14 +128,35 @@ var marcasContadas   = {}
       var esFinalizado = stClean.indexOf('finalizado') !== -1 ||
                          stClean.indexOf('cerrado')    !== -1;
 
-     if (!marcasContadas[cliente]) {
-  marcasContadas[cliente] = esRenovado ? 'renovado' : esActivo ? 'activo' : esFinalizado ? 'finalizado' : '';
-  if (esActivo)     marcasActivas++;
-  if (esRenovado)   marcasRenovadas++;
-  if (esFinalizado) marcasFinalizado++;
-}
-
       byStatus[stFull] = (byStatus[stFull] || 0) + 1;
+
+      // Nombre de marca para contar únicas
+      var marcaProp = getProp(props, 'Marca/Clientes', 'Marca', 'MARCA/CLIENTES', 'MARCA');
+      var cliente   = 'Sin nombre';
+      if (marcaProp && marcaProp.title && marcaProp.title.length > 0) {
+        cliente = marcaProp.title[0].plain_text;
+      }
+
+      // Contar marca única por status de mayor prioridad
+      if (esActivo || esRenovado || esFinalizado) {
+        var etiqNueva = esRenovado ? 'Renovado' : esActivo ? 'Activo' : 'Finalizado';
+        var etiqActual = marcasContadas[cliente];
+        if (!etiqActual) {
+          marcasContadas[cliente] = etiqNueva;
+          if (esActivo)     marcasActivas++;
+          if (esRenovado)   marcasRenovadas++;
+          if (esFinalizado) marcasFinalizado++;
+        } else if ((ETIQ_PRIO[etiqNueva] || 0) > (ETIQ_PRIO[etiqActual] || 0)) {
+          // Actualizar a status de mayor prioridad
+          if (etiqActual === 'Activo')     marcasActivas--;
+          if (etiqActual === 'Renovado')   marcasRenovadas--;
+          if (etiqActual === 'Finalizado') marcasFinalizado--;
+          marcasContadas[cliente] = etiqNueva;
+          if (esRenovado)   marcasRenovadas++;
+          else if (esActivo) marcasActivas++;
+          else               marcasFinalizado++;
+        }
+      }
 
       // Tipo — solo activo, renovado o finalizado
       var tipoProp   = getProp(props, 'Tipo', 'TIPO');
@@ -144,7 +165,6 @@ var marcasContadas   = {}
         byTipo[tipoNombre] = (byTipo[tipoNombre] || 0) + 1;
       }
 
-      // Pagado
       var pagadoProp = getProp(props, 'Pagado', 'PAGADO');
       var isPagado   = pagadoProp && pagadoProp.checkbox === true;
 
@@ -152,30 +172,19 @@ var marcasContadas   = {}
         if (isPagado) {
           totalPagado += presupuesto;
 
-          // Industria
           var indProp   = getProp(props, 'Industria/Servicios', 'Industria', 'INDUSTRIA/SERVICIOS', 'INDUSTRIA');
           var industria = multiSelectFirst(indProp, 'Sin industria');
           byIndustria[industria] = (byIndustria[industria] || 0) + presupuesto;
 
-          // Cliente
-          var marcaProp = getProp(props, 'Marca/Clientes', 'Marca', 'MARCA/CLIENTES', 'MARCA');
-          var cliente   = 'Sin nombre';
-          if (marcaProp && marcaProp.title && marcaProp.title.length > 0) {
-            cliente = marcaProp.title[0].plain_text;
-          }
-          byClienteMap[cliente]  = (byClienteMap[cliente] || 0) + presupuesto;
+          byClienteMap[cliente] = (byClienteMap[cliente] || 0) + presupuesto;
           byClienteSimb[cliente] = simbolo;
-          @media(max-width:600px){
-  .kpi-row{grid-template-columns:1fr 1fr}
-  .kpi-row .kpi-card:last-child{grid-column:1/-1}
-  .two-col{grid-template-columns:1fr 1fr}
-  .kpi-value{font-size:22px}
-  .kpi-card{padding:12px 14px}
-  .donut-inner{flex-direction:column;align-items:flex-start;gap:6px}
-  .donut-card{padding:12px}
-  .client-card{padding:12px}
-  body{padding:8px}
-}
+
+          // Etiqueta de mayor prioridad para el cliente
+          var eActual = byClienteEtiq[cliente];
+          var eNueva  = esRenovado ? 'Renovado' : esActivo ? 'Activo' : 'Finalizado';
+          if (!eActual || (ETIQ_PRIO[eNueva] || 0) > (ETIQ_PRIO[eActual] || 0)) {
+            byClienteEtiq[cliente] = eNueva;
+          }
 
         } else {
           totalPorCobrar += presupuesto;
@@ -199,6 +208,9 @@ var marcasContadas   = {}
     });
 
     var now = new Date();
+    var mes = now.toLocaleString('es-ES', { month: 'long' });
+    mes = mes.charAt(0).toUpperCase() + mes.slice(1);
+
     return res.status(200).json({
       totalPagado:      totalPagado,
       totalPorCobrar:   totalPorCobrar,
@@ -211,7 +223,7 @@ var marcasContadas   = {}
       byCliente:        byCliente,
       byStatus:         sort(byStatus),
       byTipo:           sort(byTipo),
-      mes: now.toLocaleString('es-ES', { month: 'long', year: 'numeric' })
+      mes:              mes + ' ' + now.getFullYear()
     });
 
   } catch(e) {
