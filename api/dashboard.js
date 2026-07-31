@@ -99,8 +99,9 @@ module.exports = async function handler(req, res) {
     var byStatus         = {};
     var byTipo           = {};
     var marcasActivas    = 0;
-    var marcasRenovadas  = 0;
-    var marcasFinalizado = 0;
+var marcasRenovadas  = 0;
+var marcasFinalizado = 0;
+var marcasContadas   = {}
     var monedaGlobal     = '$';
 
     results.forEach(function(page) {
@@ -127,9 +128,12 @@ module.exports = async function handler(req, res) {
       var esFinalizado = stClean.indexOf('finalizado') !== -1 ||
                          stClean.indexOf('cerrado')    !== -1;
 
-      if (esActivo)     marcasActivas++;
-      if (esRenovado)   marcasRenovadas++;
-      if (esFinalizado) marcasFinalizado++;
+     if (!marcasContadas[cliente]) {
+  marcasContadas[cliente] = esRenovado ? 'renovado' : esActivo ? 'activo' : esFinalizado ? 'finalizado' : '';
+  if (esActivo)     marcasActivas++;
+  if (esRenovado)   marcasRenovadas++;
+  if (esFinalizado) marcasFinalizado++;
+}
 
       byStatus[stFull] = (byStatus[stFull] || 0) + 1;
 
@@ -161,8 +165,17 @@ module.exports = async function handler(req, res) {
           }
           byClienteMap[cliente]  = (byClienteMap[cliente] || 0) + presupuesto;
           byClienteSimb[cliente] = simbolo;
-          byClienteEtiq[cliente] = esActivo ? 'Activo' :
-                                   esRenovado ? 'Renovado' : 'Finalizado';
+          @media(max-width:600px){
+  .kpi-row{grid-template-columns:1fr 1fr}
+  .kpi-row .kpi-card:last-child{grid-column:1/-1}
+  .two-col{grid-template-columns:1fr 1fr}
+  .kpi-value{font-size:22px}
+  .kpi-card{padding:12px 14px}
+  .donut-inner{flex-direction:column;align-items:flex-start;gap:6px}
+  .donut-card{padding:12px}
+  .client-card{padding:12px}
+  body{padding:8px}
+}
 
         } else {
           totalPorCobrar += presupuesto;
