@@ -83,53 +83,31 @@ module.exports = async function handler(req, res) {
       return fallback || 'Sin valor';
     }
 
-    // Simbolos de moneda
-    var CURRENCY_SYMBOLS = {
-      'usd': '$', 'USD': '$',
-      'gtq': 'Q', 'GTQ': 'Q',
-      'mxn': 'MX$', 'MXN': 'MX$',
-      'eur': '€', 'EUR': '€',
-      'cop': 'COP$', 'COP': 'COP$',
-      'pen': 'S/', 'PEN': 'S/',
-      'clp': 'CLP$', 'CLP': 'CLP$',
-    };
-
-    var totalPagado     = 0;
-    var totalPorCobrar  = 0;
-    var byIndustria     = {};
-    var byStatus        = {};
-    var byTipo          = {};
-    var marcasActivas   = 0;
-    var marcasRenovadas = 0;
+    var totalPagado      = 0;
+    var totalPorCobrar   = 0;
+    var byIndustria      = {};
+    var byCliente        = {};
+    var byClienteEtiqueta = {};
+    var byStatus         = {};
+    var byTipo           = {};
+    var marcasActivas    = 0;
+    var marcasRenovadas  = 0;
     var marcasFinalizado = 0;
-    var byCliente       = [];
 
     results.forEach(function(page) {
       var props = page.properties;
       if (!props) return;
 
-      // Monto — acepta Monto, Presupuesto y variantes
-      var monProp  = getProp(props, 'Monto', 'MONTO', 'Presupuesto', 'PRESUPUESTO');
-      var monto    = (monProp && typeof monProp.number === 'number') ? monProp.number : 0;
+      var presProp    = getProp(props, 'Monto', 'MONTO', 'Presupuesto', 'PRESUPUESTO');
+      var presupuesto = (presProp && typeof presProp.number === 'number') ? presProp.number : 0;
 
-      // Moneda — columna nueva opcional, default USD
-      var monedaProp = getProp(props, 'Moneda', 'MONEDA', 'Currency');
-      var moneda     = 'USD';
-      if (monedaProp) {
-        moneda = multiSelectFirst(monedaProp, 'USD');
-      }
-      var simbolo = CURRENCY_SYMBOLS[moneda] || moneda + ' ';
-
-      // Status
-      var stProp   = getProp(props, 'Status', 'STATUS');
-      var stClean  = getSelectClean(stProp);
-      var stFull   = getSelectFull(stProp) || 'Sin status';
+      var stProp  = getProp(props, 'Status', 'STATUS');
+      var stClean = getSelectClean(stProp);
+      var stFull  = getSelectFull(stProp) || 'Sin status';
 
       var esActivo     = stClean.indexOf('activo')     !== -1;
       var esRenovado   = stClean.indexOf('renovado')   !== -1;
-      var esFinalizado = stClean.indexOf('finalizado') !== -1 ||
-                         stClean.indexOf('cerrado')    !== -1;
-      var esPagado_st  = stClean.indexOf('pagado')     !== -1;
+      var esFinalizado = stClean.indexOf('finalizado') !== -1 || stClean.indexOf('cerrado') !== -1;
 
       if (esActivo)     marcasActivas++;
       if (esRenovado)   marcasRenovadas++;
@@ -137,66 +115,49 @@ module.exports = async function handler(req, res) {
 
       byStatus[stFull] = (byStatus[stFull] || 0) + 1;
 
-      // Tipo — solo Activo, Renovado o Finalizado
       var tipoProp   = getProp(props, 'Tipo', 'TIPO');
       var tipoNombre = multiSelectFirst(tipoProp, 'Sin tipo');
-      if (esActivo || esRenovado || esFinalizado) {
-        byTipo[tipoNombre] = (byTipo[tipoNombre] || 0) + 1;
-      }
+      byTipo[tipoNombre] = (byTipo[tipoNombre] || 0) + 1;
 
-      // Pagado checkbox
       var pagadoProp = getProp(props, 'Pagado', 'PAGADO');
-      var isPagado   = (pagadoProp && pagadoProp.checkbox === true) || esPagado_st;
+      var isPagado   = pagadoProp && pagadoProp.checkbox === true;
 
-      if ((esActivo || esRenovado || esFinalizado) && monto > 0) {
-
-        // Etiqueta de status para top clientes
-        var etiqueta = esActivo ? 'Activo' :
-                       esRenovado ? 'Renovado' :
-                       esFinalizado ? 'Finalizado' :
-                       esPagado_st ? 'Pagado' : stFull;
-
-        // Nombre de marca
-        var marcaProp = getProp(props, 'Marca/Clientes', 'Marca', 'MARCA/CLIENTES', 'MARCA');
-        var cliente   = 'Sin nombre';
-        if (marcaProp && marcaProp.title && marcaProp.title.length > 0) {
-          cliente = marcaProp.title[0].plain_text;
-        }
-
-        // Industria
-        var indProp   = getProp(props, 'Industria/Servicios', 'Industria', 'INDUSTRIA/SERVICIOS', 'INDUSTRIA');
-        var industria = multiSelectFirst(indProp, 'Sin industria');
-
+      if ((esActivo || esRenovado || esFinalizado) && presupuesto > 0) {
         if (isPagado) {
-          totalPagado += monto;
-          byIndustria[industria] = (byIndustria[industria] || 0) + monto;
-          // Agregar a lista de clientes con etiqueta y moneda
-          var existing = byCliente.find(function(c) { return c.nombre === cliente; });
-          if (existing) {
-            existing.total += monto;
-          } else {
-            byCliente.push({
-              nombre: cliente,
-              total: monto,
-              moneda: moneda,
-              simbolo: simbolo,
-              etiqueta: etiqueta
-            });
+          totalPagado += presupuesto;
+
+          var indProp   = getProp(props, 'Industria/Servicios', 'Industria', 'INDUSTRIA/SERVICIOS', 'INDUSTRIA');
+          var industria = multiSelectFirst(indProp, 'Sin industria');
+          byIndustria[industria] = (byIndustria[industria] || 0) + presupuesto;
+
+          var marcaProp = getProp(props, 'Marca/Clientes', 'Marca', 'MARCA/CLIENTES', 'MARCA');
+          var cliente   = 'Sin nombre';
+          if (marcaProp && marcaProp.title && marcaProp.title.length > 0) {
+            cliente = marcaProp.title[0].plain_text;
           }
+          byCliente[cliente] = (byCliente[cliente] || 0) + presupuesto;
+          var etiqueta = esActivo ? 'Activo' : esRenovado ? 'Renovado' : 'Finalizado';
+          byClienteEtiqueta[cliente] = etiqueta;
+
         } else {
-          totalPorCobrar += monto;
+          totalPorCobrar += presupuesto;
         }
       }
     });
 
-    // Ordenar clientes por total
-    byCliente.sort(function(a, b) { return b.total - a.total; });
-
-    var sortObj = function(obj) {
+    var sort = function(obj) {
       return Object.entries(obj)
         .sort(function(a, b) { return b[1] - a[1]; })
         .map(function(e) { return { nombre: e[0], total: e[1] }; });
     };
+
+    var byClienteConEtiqueta = sort(byCliente).map(function(c) {
+      return {
+        nombre:   c.nombre,
+        total:    c.total,
+        etiqueta: byClienteEtiqueta[c.nombre] || 'Activo'
+      };
+    });
 
     var now = new Date();
     return res.status(200).json({
@@ -206,10 +167,10 @@ module.exports = async function handler(req, res) {
       marcasRenovadas:  marcasRenovadas,
       marcasFinalizado: marcasFinalizado,
       totalMarcas:      results.length,
-      byIndustria:      sortObj(byIndustria),
-      byCliente:        byCliente,
-      byStatus:         sortObj(byStatus),
-      byTipo:           sortObj(byTipo),
+      byIndustria:      sort(byIndustria),
+      byCliente:        byClienteConEtiqueta,
+      byStatus:         sort(byStatus),
+      byTipo:           sort(byTipo),
       mes: now.toLocaleString('es-ES', { month: 'long', year: 'numeric' })
     });
 
