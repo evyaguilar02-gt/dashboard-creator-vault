@@ -45,6 +45,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .client-bar-wrap{width:60px;background:rgba(255,255,255,0.05);border-radius:3px;height:4px;flex-shrink:0}
 .client-bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#c4a05a,#e2c880)}
 .client-amount{font-size:12px;color:#e2c880;font-family:monospace;white-space:nowrap}
+/* CAMPAÑAS WEB */
 .camp-card{background:#1c1a16;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px;margin-bottom:16px}
 .camp-table{width:100%;border-collapse:collapse;font-size:11px}
 .camp-table th{text-align:left;padding:7px 10px;color:#524d44;font-size:9px;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid rgba(255,255,255,0.07)}
@@ -53,10 +54,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .camp-table tr:hover td{background:rgba(255,255,255,0.02)}
 .pagado-si{font-size:10px;padding:2px 7px;border-radius:8px;font-weight:600;background:rgba(74,124,89,0.2);color:#6db88a}
 .pagado-no{font-size:10px;padding:2px 7px;border-radius:8px;font-weight:600;background:rgba(200,168,68,0.15);color:#c8a844}
+/* CAMPAÑAS MÓVIL */
 .camp-mobile{display:none}
-.camp-item{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:12px;margin-bottom:8px}
-.camp-item:last-child{margin-bottom:0}
-.camp-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.camp-item{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:10px}
+.camp-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
 .camp-row:last-child{margin-bottom:0}
 .camp-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:#524d44}
 .loading{text-align:center;padding:40px;color:#524d44;font-size:13px}
@@ -64,14 +65,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .footer{text-align:center;margin-top:20px;font-size:10px;color:#3a3628;letter-spacing:.1em;font-family:monospace}
 @media(max-width:600px){
   .kpi-row{grid-template-columns:1fr 1fr}
-  .kpi-row .kpi-card:last-child{grid-column:1/-1}
+  .kpi-row .kpi-card:last-child{grid-column:unset}
   .two-col{grid-template-columns:1fr 1fr}
-  .kpi-value{font-size:22px}
-  .kpi-card{padding:12px}
+  .kpi-value{font-size:20px}
+  .kpi-card{padding:10px 12px}
   .donut-inner{flex-direction:column;align-items:flex-start;gap:6px}
-  .donut-card{padding:12px}
+  .donut-card{padding:10px}
+  .client-card{padding:10px}
   .camp-table{display:none}
-  .camp-mobile{display:block}
+  .camp-mobile{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   body{padding:8px}
 }
 </style>
@@ -120,17 +122,20 @@ function render(data){
   var s=data.simbolo||'$';
   var html='';
 
+  // KPIs — fila de 3 en web, 2+2 en móvil
   html+='<div class="kpi-row">';
   html+='<div class="kpi-card gold"><div class="kpi-label">💵 Cobrado · '+(data.mes||'Este mes')+'</div><div class="kpi-value gold">'+fmt(data.totalPagado,s)+'</div><div class="kpi-sub"><span class="trend-neutral">Pagado y confirmado</span></div></div>';
   html+='<div class="kpi-card amber"><div class="kpi-label">⏳ Por cobrar</div><div class="kpi-value amber">'+fmt(data.totalPorCobrar,s)+'</div><div class="kpi-sub"><span class="trend-neutral">Activas sin pagar</span></div></div>';
   html+='<div class="kpi-card"><div class="kpi-label">✅ Activas · Renovadas · Finalizadas</div><div class="kpi-value green">'+((data.marcasActivas||0)+(data.marcasRenovadas||0)+(data.marcasFinalizado||0))+'</div><div class="kpi-sub"><span class="trend-neutral">'+(data.marcasActivas||0)+' activas · '+(data.marcasRenovadas||0)+' renovadas · '+(data.marcasFinalizado||0)+' finalizadas</span></div></div>';
   html+='</div>';
 
+  // Fila 1 donuts: Status + Tipo
   html+='<div class="two-col">';
   if(data.byStatus&&data.byStatus.length>0){var tS=data.byStatus.reduce(function(a,i){return a+i.total},0);html+='<div class="donut-card"><div class="sec-title">📌 Por status</div><div class="donut-inner">'+donut(data.byStatus,tS,80)+'<div class="donut-legend">';data.byStatus.forEach(function(item,i){var pct=tS>0?Math.round(item.total/tS*100):0;html+='<div class="donut-item"><div class="donut-dot" style="background:'+COLORS[i%COLORS.length]+'"></div><div class="donut-name">'+item.nombre+'</div><div class="donut-val">'+item.total+' ('+pct+'%)</div></div>';});html+='</div></div></div>';}
   if(data.byTipo&&data.byTipo.length>0){var tT=data.byTipo.reduce(function(a,i){return a+i.total},0);html+='<div class="donut-card"><div class="sec-title">💡 Tipo</div><div class="donut-inner">'+donut(data.byTipo,tT,80)+'<div class="donut-legend">';data.byTipo.forEach(function(item,i){var pct=tT>0?Math.round(item.total/tT*100):0;html+='<div class="donut-item"><div class="donut-dot" style="background:'+COLORS[i%COLORS.length]+'"></div><div class="donut-name">'+item.nombre+'</div><div class="donut-val">'+item.total+' ('+pct+'%)</div></div>';});html+='</div></div></div>';}
   html+='</div>';
 
+  // Fila 2 donuts: Industria + Top Marcas
   html+='<div class="two-col">';
   if(data.byIndustria&&data.byIndustria.length>0){var tI=data.byIndustria.reduce(function(a,i){return a+i.total},0);html+='<div class="donut-card"><div class="sec-title">🏭 Por industria / servicio</div><div class="donut-inner">'+donut(data.byIndustria,tI,80)+'<div class="donut-legend">';data.byIndustria.forEach(function(item,i){var pct=tI>0?Math.round(item.total/tI*100):0;html+='<div class="donut-item"><div class="donut-dot" style="background:'+COLORS[i%COLORS.length]+'"></div><div class="donut-name">'+item.nombre+'</div><div class="donut-val">'+pct+'% · '+fmt(item.total,s)+'</div></div>';});html+='</div></div></div>';}
   if(data.byCliente&&data.byCliente.length>0){
@@ -142,11 +147,14 @@ function render(data){
   }
   html+='</div>';
 
+  // Campañas — WEB tabla top 3, MÓVIL 2 tarjetas lado a lado
   if(data.campanas&&data.campanas.length>0){
-    html+='<div class="camp-card"><div class="sec-title">🎯 Campañas</div>';
+    var top3c=data.campanas.slice(0,3);
+    html+='<div class="camp-card"><div class="sec-title">🎯 Top campañas</div>';
+
     // Tabla web
     html+='<table class="camp-table"><thead><tr><th>Campaña</th><th>Marca</th><th>Mes</th><th>Monto</th><th>Status</th><th>Pagado</th></tr></thead><tbody>';
-    data.campanas.forEach(function(c){
+    top3c.forEach(function(c){
       html+='<tr>';
       html+='<td style="color:#e8e2d8;font-weight:500">'+c.campana+'</td>';
       html+='<td style="color:#c8bfa8">'+c.marca+'</td>';
@@ -157,15 +165,15 @@ function render(data){
       html+='</tr>';
     });
     html+='</tbody></table>';
-    // Tarjetas móvil
+
+    // Tarjetas móvil — grid 2 columnas
     html+='<div class="camp-mobile">';
-    data.campanas.forEach(function(c){
+    top3c.forEach(function(c){
       html+='<div class="camp-item">';
-      html+='<div class="camp-row"><span style="font-size:13px;font-weight:600;color:#e8e2d8">'+c.campana+'</span>'+badge(c.etiqueta)+'</div>';
-      html+='<div class="camp-row"><span class="camp-lbl">Marca</span><span style="font-size:12px;color:#c8bfa8">'+c.marca+'</span></div>';
-      html+='<div class="camp-row"><span class="camp-lbl">Mes</span><span style="font-size:12px;color:#8a8070">'+c.mes+'</span></div>';
-      html+='<div class="camp-row"><span class="camp-lbl">Monto</span><span style="font-family:monospace;color:#e2c880;font-size:13px">'+fmt(c.monto,c.simbolo||s)+'</span></div>';
-      html+='<div class="camp-row"><span class="camp-lbl">Pago</span><span class="'+(c.pagado?'pagado-si':'pagado-no')+'">'+(c.pagado?'✓ Pagado':'⏳ Pendiente')+'</span></div>';
+      html+='<div class="camp-row"><span style="font-size:12px;font-weight:600;color:#e8e2d8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+c.campana+'</span></div>';
+      html+='<div class="camp-row" style="margin-top:4px">'+badge(c.etiqueta)+'<span class="'+(c.pagado?'pagado-si':'pagado-no')+'">'+(c.pagado?'✓':'⏳')+'</span></div>';
+      html+='<div class="camp-row" style="margin-top:4px"><span class="camp-lbl">Marca</span><span style="font-size:11px;color:#c8bfa8">'+c.marca+'</span></div>';
+      html+='<div class="camp-row"><span class="camp-lbl">Monto</span><span style="font-family:monospace;color:#e2c880;font-size:12px">'+fmt(c.monto,c.simbolo||s)+'</span></div>';
       html+='</div>';
     });
     html+='</div>';
