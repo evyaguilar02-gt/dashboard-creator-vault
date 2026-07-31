@@ -96,37 +96,20 @@ module.exports = async function handler(req, res) {
 
     var ETIQ_PRIO = { 'Renovado': 3, 'Activo': 2, 'Finalizado': 1 };
 
-    var MONTH_ORDER = ['enero','febrero','marzo','abril','mayo','junio',
-                       'julio','agosto','septiembre','octubre','noviembre','diciembre'];
-
-    var now = new Date();
-    var mesActualIdx = now.getMonth(); // 0-11
-    var mesActualNombre = MONTH_ORDER[mesActualIdx];
-
-    // Acumuladores globales (todos los meses)
-    var totalPagadoAll     = 0;
-    var totalPorCobrarAll  = 0;
-
-    // Acumuladores mes actual
-    var totalPagadoMes    = 0;
-    var totalPorCobrarMes = 0;
-
-    var byIndustriaAll  = {};
-    var byIndustriaMes  = {};
-    var byClienteMapAll = {};
-    var byClienteMapMes = {};
-    var byClienteEtiq   = {};
-    var byClienteSimb   = {};
-    var byStatusAll     = {};
-    var byTipoAll       = {};
-    var byTipoMes       = {};
-    var marcasContadas  = {};
-    var marcasActivas   = 0;
-    var marcasRenovadas = 0;
+    var totalPagado      = 0;
+    var totalPorCobrar   = 0;
+    var byIndustria      = {};
+    var byClienteMap     = {};
+    var byClienteEtiq    = {};
+    var byClienteSimb    = {};
+    var byStatus         = {};
+    var byTipo           = {};
+    var marcasContadas   = {};
+    var marcasActivas    = 0;
+    var marcasRenovadas  = 0;
     var marcasFinalizado = 0;
-    var monedaGlobal    = '$';
-    var campanas        = [];
-    var mesesDisponibles = {};
+    var monedaGlobal     = '$';
+    var campanas         = [];
 
     results.forEach(function(page) {
       var props = page.properties;
@@ -149,7 +132,7 @@ module.exports = async function handler(req, res) {
       var esFinalizado = stClean.indexOf('finalizado') !== -1 || stClean.indexOf('cerrado') !== -1;
       var esRelevante  = esActivo || esRenovado || esFinalizado;
 
-      byStatusAll[stFull] = (byStatusAll[stFull] || 0) + 1;
+      byStatus[stFull] = (byStatus[stFull] || 0) + 1;
 
       // Nombre de marca
       var marcaProp = getProp(props, 'Marca/Clientes', 'Marca', 'MARCA/CLIENTES', 'MARCA');
@@ -158,21 +141,13 @@ module.exports = async function handler(req, res) {
         cliente = marcaProp.title[0].plain_text;
       }
 
-      // Nombre de campaña
-      var campProp = getProp(props, 'Campaña', 'CAMPAÑA', 'Campana', 'CAMPANA', 'Campaign');
+      // Campaña
+      var campProp = getProp(props, 'Campaña', 'CAMPAÑA', 'Campana', 'CAMPANA');
       var campana  = getText(campProp) || cliente;
 
       // Mes
-      var mesProp  = getProp(props, 'Mes', 'MES', 'Month');
-      var mesNombre = getSelectFull(mesProp) || multiSelectFirst(mesProp, '');
-      var mesClean  = mesNombre.toLowerCase().trim();
-      var mesIdx    = MONTH_ORDER.indexOf(mesClean);
-      var esMesActual = mesIdx === mesActualIdx;
-
-      if (mesNombre) mesesDisponibles[mesNombre] = mesIdx;
-
-      var pagadoProp = getProp(props, 'Pagado', 'PAGADO');
-      var isPagado   = pagadoProp && pagadoProp.checkbox === true;
+      var mesProp   = getProp(props, 'Mes', 'MES');
+      var mesNombre = getSelectFull(mesProp) || multiSelectFirst(mesProp, 'Sin mes');
 
       // Contar marcas únicas
       if (esRelevante) {
@@ -193,50 +168,47 @@ module.exports = async function handler(req, res) {
           else               marcasFinalizado++;
         }
 
-        // Tipo
+        // Tipo — todas las relevantes
         var tipoProp   = getProp(props, 'Tipo', 'TIPO');
         var tipoNombre = multiSelectFirst(tipoProp, 'Sin tipo');
-        byTipoAll[tipoNombre] = (byTipoAll[tipoNombre] || 0) + 1;
-        if (esMesActual) {
-          byTipoMes[tipoNombre] = (byTipoMes[tipoNombre] || 0) + 1;
-        }
-
-        // Campaña para la tabla
-        campanas.push({
-          campana:  campana,
-          marca:    cliente,
-          mes:      mesNombre || 'Sin mes',
-          monto:    presupuesto,
-          simbolo:  simbolo,
-          status:   stFull,
-          pagado:   isPagado,
-          etiqueta: etiqNueva
-        });
+        byTipo[tipoNombre] = (byTipo[tipoNombre] || 0) + 1;
       }
 
-      if (esRelevante && presupuesto > 0) {
-        var indProp   = getProp(props, 'Industria/Servicios', 'Industria', 'INDUSTRIA/SERVICIOS', 'INDUSTRIA');
-        var industria = multiSelectFirst(indProp, 'Sin industria');
+      var pagadoProp = getProp(props, 'Pagado', 'PAGADO');
+      var isPagado   = pagadoProp && pagadoProp.checkbox === true;
 
+      if (esRelevante && presupuesto > 0) {
         if (isPagado) {
-          totalPagadoAll += presupuesto;
-          byIndustriaAll[industria] = (byIndustriaAll[industria] || 0) + presupuesto;
-          byClienteMapAll[cliente]  = (byClienteMapAll[cliente] || 0) + presupuesto;
-          byClienteSimb[cliente]    = simbolo;
+          totalPagado += presupuesto;
+
+          var indProp   = getProp(props, 'Industria/Servicios', 'Industria', 'INDUSTRIA/SERVICIOS', 'INDUSTRIA');
+          var industria = multiSelectFirst(indProp, 'Sin industria');
+          byIndustria[industria] = (byIndustria[industria] || 0) + presupuesto;
+
+          byClienteMap[cliente]  = (byClienteMap[cliente] || 0) + presupuesto;
+          byClienteSimb[cliente] = simbolo;
           var eA = byClienteEtiq[cliente];
           var eN = esRenovado ? 'Renovado' : esActivo ? 'Activo' : 'Finalizado';
           if (!eA || (ETIQ_PRIO[eN] || 0) > (ETIQ_PRIO[eA] || 0)) {
             byClienteEtiq[cliente] = eN;
           }
-          if (esMesActual) {
-            totalPagadoMes += presupuesto;
-            byIndustriaMes[industria]  = (byIndustriaMes[industria] || 0) + presupuesto;
-            byClienteMapMes[cliente]   = (byClienteMapMes[cliente] || 0) + presupuesto;
-          }
         } else {
-          totalPorCobrarAll += presupuesto;
-          if (esMesActual) totalPorCobrarMes += presupuesto;
+          totalPorCobrar += presupuesto;
         }
+      }
+
+      // Agregar a campañas (todas las relevantes)
+      if (esRelevante) {
+        campanas.push({
+          campana:  campana,
+          marca:    cliente,
+          mes:      mesNombre,
+          monto:    presupuesto,
+          simbolo:  simbolo,
+          status:   stFull,
+          pagado:   isPagado,
+          etiqueta: esRenovado ? 'Renovado' : esActivo ? 'Activo' : 'Finalizado'
+        });
       }
     });
 
@@ -246,48 +218,33 @@ module.exports = async function handler(req, res) {
         .map(function(e) { return { nombre: e[0], total: e[1] }; });
     };
 
-    var buildClientes = function(map) {
-      return sort(map).map(function(c) {
-        return {
-          nombre:   c.nombre,
-          total:    c.total,
-          etiqueta: byClienteEtiq[c.nombre] || 'Activo',
-          simbolo:  byClienteSimb[c.nombre] || '$'
-        };
-      });
-    };
-
-    // Meses disponibles ordenados
-    var mesesOrdenados = Object.keys(mesesDisponibles).sort(function(a, b) {
-      return (mesesDisponibles[a] || 0) - (mesesDisponibles[b] || 0);
+    var byCliente = sort(byClienteMap).map(function(c) {
+      return {
+        nombre:   c.nombre,
+        total:    c.total,
+        etiqueta: byClienteEtiq[c.nombre] || 'Activo',
+        simbolo:  byClienteSimb[c.nombre] || '$'
+      };
     });
 
-    var mesActualStr = MONTH_ORDER[mesActualIdx];
-    mesActualStr = mesActualStr.charAt(0).toUpperCase() + mesActualStr.slice(1);
+    var now = new Date();
+    var mesNow = now.toLocaleString('es-ES', { month: 'long' });
+    mesNow = mesNow.charAt(0).toUpperCase() + mesNow.slice(1);
 
     return res.status(200).json({
-      // Mes actual
-      totalPagadoMes:    totalPagadoMes,
-      totalPorCobrarMes: totalPorCobrarMes,
-      byIndustriaMes:    sort(byIndustriaMes),
-      byClienteMes:      buildClientes(byClienteMapMes),
-      byTipoMes:         sort(byTipoMes),
-      // Acumulado total
-      totalPagadoAll:    totalPagadoAll,
-      totalPorCobrarAll: totalPorCobrarAll,
-      byIndustriaAll:    sort(byIndustriaAll),
-      byClienteAll:      buildClientes(byClienteMapAll),
-      byTipoAll:         sort(byTipoAll),
-      // Compartidos
-      marcasActivas:     marcasActivas,
-      marcasRenovadas:   marcasRenovadas,
-      marcasFinalizado:  marcasFinalizado,
-      totalMarcas:       results.length,
-      simbolo:           monedaGlobal,
-      byStatus:          sort(byStatusAll),
-      campanas:          campanas,
-      meses:             mesesOrdenados,
-      mesActual:         mesActualStr + ' de ' + now.getFullYear()
+      totalPagado:      totalPagado,
+      totalPorCobrar:   totalPorCobrar,
+      marcasActivas:    marcasActivas,
+      marcasRenovadas:  marcasRenovadas,
+      marcasFinalizado: marcasFinalizado,
+      totalMarcas:      results.length,
+      simbolo:          monedaGlobal,
+      byIndustria:      sort(byIndustria),
+      byCliente:        byCliente,
+      byStatus:         sort(byStatus),
+      byTipo:           sort(byTipo),
+      campanas:         campanas,
+      mes:              mesNow + ' de ' + now.getFullYear()
     });
 
   } catch(e) {
