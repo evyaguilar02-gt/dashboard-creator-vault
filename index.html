@@ -7,87 +7,61 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0f0e0c;color:#e8e2d8;padding:16px;min-height:100vh}
-.wrap{max-width:900px;margin:0 auto}
-.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.wrap{max-width:860px;margin:0 auto}
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
 .header-title{font-size:12px;font-weight:600;color:#8a8070;text-transform:uppercase;letter-spacing:.08em}
 .header-right{display:flex;align-items:center;gap:10px}
 .header-date{font-size:11px;color:#524d44;font-family:monospace}
 .refresh-btn{background:none;border:1px solid rgba(196,160,90,0.3);color:#c4a05a;font-size:11px;padding:5px 14px;border-radius:6px;cursor:pointer;font-family:inherit}
 .refresh-btn:hover{background:rgba(196,160,90,0.1)}
-
-/* TABS DE MES */
-.mes-tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
-.mes-tab{padding:5px 14px;border-radius:20px;border:1px solid rgba(255,255,255,0.07);background:#1c1a16;color:#8a8070;font-size:11px;cursor:pointer;font-family:inherit;transition:all .15s}
-.mes-tab:hover{border-color:rgba(196,160,90,0.3);color:#c8bfa8}
-.mes-tab.active{background:rgba(196,160,90,0.15);border-color:rgba(196,160,90,0.4);color:#e2c880;font-weight:600}
-
-/* ACUMULADO BANNER */
-.acum-banner{background:rgba(196,160,90,0.08);border:1px solid rgba(196,160,90,0.2);border-radius:10px;padding:10px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
-.acum-label{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#8a8070}
-.acum-value{font-size:18px;font-weight:700;color:#e2c880;font-family:monospace}
-.acum-sub{font-size:10px;color:#524d44}
-
-/* KPI */
 .kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
-.kpi-card{background:#1c1a16;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px 18px}
+.kpi-card{background:#1c1a16;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:18px 20px}
 .kpi-card.gold{border-color:rgba(196,160,90,0.3)}
 .kpi-card.amber{border-color:rgba(200,168,68,0.3)}
 .kpi-label{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#524d44;margin-bottom:8px}
-.kpi-value{font-size:32px;font-weight:700;color:#f5f0e8;line-height:1;font-family:monospace}
+.kpi-value{font-size:36px;font-weight:700;color:#f5f0e8;line-height:1;font-family:monospace}
 .kpi-value.gold{color:#e2c880}
 .kpi-value.amber{color:#c8a844}
 .kpi-value.green{color:#6db88a}
-.kpi-sub{font-size:11px;margin-top:6px}
+.kpi-sub{font-size:11px;margin-top:8px}
 .trend-neutral{color:#524d44;font-style:italic}
-
-/* DONUTS */
 .sec-title{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#524d44;margin-bottom:10px;display:flex;align-items:center;gap:8px}
 .sec-title::after{content:'';flex:1;height:1px;background:rgba(255,255,255,0.07)}
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
-.donut-card{background:#1c1a16;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px}
-.donut-inner{display:flex;align-items:center;gap:14px}
+.donut-card{background:#1c1a16;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px}
+.donut-inner{display:flex;align-items:center;gap:16px}
 .donut-legend{flex:1}
-.donut-item{display:flex;align-items:center;gap:8px;margin-bottom:7px;font-size:11px}
+.donut-item{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:12px}
 .donut-item:last-child{margin-bottom:0}
-.donut-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.donut-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
 .donut-name{flex:1;color:#c8bfa8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.donut-val{color:#e2c880;font-family:monospace;font-size:10px;white-space:nowrap}
-
-/* TOP MARCAS */
-.client-card{background:#1c1a16;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px;margin-bottom:16px}
-.client-row{display:flex;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04);gap:6px}
+.donut-val{color:#e2c880;font-family:monospace;font-size:11px;white-space:nowrap}
+.client-card{background:#1c1a16;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px}
+.client-row{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);gap:6px}
 .client-row:last-child{border-bottom:none}
-.client-rank{font-size:12px;color:#524d44;font-family:monospace;width:20px;flex-shrink:0}
-.client-name{flex:1;font-size:12px;color:#e8e2d8;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.client-badge{font-size:10px;padding:2px 6px;border-radius:10px;font-weight:600;flex-shrink:0;white-space:nowrap}
-.client-bar-wrap{width:50px;background:rgba(255,255,255,0.05);border-radius:3px;height:3px;flex-shrink:0}
+.client-rank{font-size:13px;color:#524d44;font-family:monospace;width:24px;flex-shrink:0}
+.client-name{flex:1;font-size:13px;color:#e8e2d8;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.client-badge{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;flex-shrink:0;white-space:nowrap}
+.client-bar-wrap{width:60px;background:rgba(255,255,255,0.05);border-radius:3px;height:4px;flex-shrink:0}
 .client-bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#c4a05a,#e2c880)}
-.client-amount{font-size:11px;color:#e2c880;font-family:monospace;white-space:nowrap}
-
-/* CAMPAÑAS */
-.camp-card{background:#1c1a16;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px;margin-bottom:16px}
+.client-amount{font-size:12px;color:#e2c880;font-family:monospace;white-space:nowrap}
+.camp-card{background:#1c1a16;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px;margin-bottom:16px}
 .camp-table{width:100%;border-collapse:collapse;font-size:11px}
 .camp-table th{text-align:left;padding:7px 10px;color:#524d44;font-size:9px;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid rgba(255,255,255,0.07)}
 .camp-table td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:middle}
 .camp-table tr:last-child td{border-bottom:none}
 .camp-table tr:hover td{background:rgba(255,255,255,0.02)}
-.pagado-badge{font-size:9px;padding:2px 6px;border-radius:8px;font-weight:600}
-.pagado-si{background:rgba(74,124,89,0.2);color:#6db88a}
-.pagado-no{background:rgba(200,168,68,0.15);color:#c8a844}
-
-/* CAMPAÑAS MÓVIL */
-.camp-cards-mobile{display:none}
-.camp-card-item{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:12px;margin-bottom:8px}
-.camp-card-item:last-child{margin-bottom:0}
-.camp-card-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
-.camp-card-row:last-child{margin-bottom:0}
-.camp-card-label{font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:#524d44}
-.camp-card-val{font-size:12px;color:#e8e2d8}
-
+.pagado-si{font-size:10px;padding:2px 7px;border-radius:8px;font-weight:600;background:rgba(74,124,89,0.2);color:#6db88a}
+.pagado-no{font-size:10px;padding:2px 7px;border-radius:8px;font-weight:600;background:rgba(200,168,68,0.15);color:#c8a844}
+.camp-mobile{display:none}
+.camp-item{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:12px;margin-bottom:8px}
+.camp-item:last-child{margin-bottom:0}
+.camp-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.camp-row:last-child{margin-bottom:0}
+.camp-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:#524d44}
 .loading{text-align:center;padding:40px;color:#524d44;font-size:13px}
 .error-box{background:rgba(142,64,64,0.15);border:1px solid rgba(142,64,64,0.3);border-radius:8px;padding:12px 16px;font-size:12px;color:#c07070}
 .footer{text-align:center;margin-top:20px;font-size:10px;color:#3a3628;letter-spacing:.1em;font-family:monospace}
-
 @media(max-width:600px){
   .kpi-row{grid-template-columns:1fr 1fr}
   .kpi-row .kpi-card:last-child{grid-column:1/-1}
@@ -95,8 +69,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   .kpi-value{font-size:22px}
   .kpi-card{padding:12px}
   .donut-inner{flex-direction:column;align-items:flex-start;gap:6px}
+  .donut-card{padding:12px}
   .camp-table{display:none}
-  .camp-cards-mobile{display:block}
+  .camp-mobile{display:block}
   body{padding:8px}
 }
 </style>
@@ -110,7 +85,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <button class="refresh-btn" onclick="cargarDatos()">↻ Actualizar</button>
     </div>
   </div>
-  <div id="mes-tabs" class="mes-tabs"></div>
   <div id="content"><div class="loading">↻ Cargando datos desde Notion...</div></div>
   <div class="footer">🏛️ The Creator Vault · Evelyn Aguilar · @evelynaguilar_gt</div>
   <div class="footer" style="margin-top:3px;font-size:8px;opacity:0.6">© 2026 Evelyn Aguilar · Prohibida la venta, reproducción o redistribución sin autorización expresa.</div>
@@ -120,8 +94,6 @@ var COLORS=['#c4a05a','#6db88a','#6098d0','#a87ed4','#c8a844','#c07070','#c09050
 var urlParams=new URLSearchParams(window.location.search);
 var USER_TOKEN=urlParams.get('token')||'';
 var USER_DBID=urlParams.get('dbid')||'';
-var allData=null;
-var mesSeleccionado='mes'; // 'mes' | 'all' | nombre de mes específico
 
 function fmt(n,s){if(!n||n===0)return (s||'$')+'0';return (s||'$')+Number(n).toLocaleString('es-GT');}
 
@@ -134,105 +106,66 @@ function badge(etiqueta){
 }
 
 function donut(data,total,size){
-  size=size||80;var cx=size/2,cy=size/2,r=size*0.38,stroke=size*0.14;
+  size=size||90;var cx=size/2,cy=size/2,r=size*0.38,stroke=size*0.14;
   var circ=2*Math.PI*r,offset=0,paths='';
   data.forEach(function(item,i){
-    var pct=total>0?item.total/total:0;
-    var dash=pct*circ,gap=circ-dash;
+    var pct=total>0?item.total/total:0;var dash=pct*circ,gap=circ-dash;
     paths+='<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+COLORS[i%COLORS.length]+'" stroke-width="'+stroke+'" stroke-dasharray="'+dash+' '+gap+'" stroke-dashoffset="'+(-(offset*circ))+'" transform="rotate(-90 '+cx+' '+cy+')" opacity="0.9"/>';
     offset+=pct;
   });
   return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'"><circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="'+stroke+'"/>'+paths+'</svg>';
 }
 
-function buildMesTabs(data){
-  var tabs='';
-  tabs+='<button class="mes-tab '+(mesSeleccionado==='mes'?'active':'')+'" onclick="switchMes(\'mes\')">'+data.mesActual+'</button>';
-  (data.meses||[]).forEach(function(m){
-    if(m.toLowerCase()!==data.mesActual.toLowerCase().split(' ')[0]){
-      tabs+='<button class="mes-tab '+(mesSeleccionado===m?'active':'')+'" onclick="switchMes(\''+m+'\')">'+m+'</button>';
-    }
-  });
-  tabs+='<button class="mes-tab '+(mesSeleccionado==='all'?'active':'')+'" onclick="switchMes(\'all\')">Acumulado 2026</button>';
-  document.getElementById('mes-tabs').innerHTML=tabs;
-}
-
-function getCampanasFiltradas(data){
-  if(mesSeleccionado==='all') return data.campanas||[];
-  if(mesSeleccionado==='mes'){
-    var mesNombre=data.mesActual.split(' ')[0].toLowerCase();
-    return (data.campanas||[]).filter(function(c){return c.mes.toLowerCase()===mesNombre;});
-  }
-  return (data.campanas||[]).filter(function(c){return c.mes.toLowerCase()===mesSeleccionado.toLowerCase();});
-}
-
 function render(data){
   var s=data.simbolo||'$';
-  var esMes=mesSeleccionado==='mes';
-  var esAll=mesSeleccionado==='all';
-  var esMesEsp=!esMes&&!esAll;
-
-  var totalPagado   = esMes ? data.totalPagadoMes : esAll ? data.totalPagadoAll : calcMesEsp(data,'pagado');
-  var totalPorCobrar= esMes ? data.totalPorCobrarMes : esAll ? data.totalPorCobrarAll : calcMesEsp(data,'porcobrar');
-  var byIndustria   = esMes ? data.byIndustriaMes : data.byIndustriaAll;
-  var byCliente     = esMes ? data.byClienteMes : data.byClienteAll;
-  var byTipo        = esMes ? data.byTipoMes : data.byTipoAll;
-  var campanas      = getCampanasFiltradas(data);
-
-  var mesLabel = esMes ? data.mesActual : esAll ? 'Acumulado 2026' : mesSeleccionado;
-
   var html='';
 
-  // Banner acumulado solo si no estamos en all
-  if(!esAll){
-    html+='<div class="acum-banner">';
-    html+='<div><div class="acum-label">Acumulado 2026</div><div class="acum-value">'+fmt(data.totalPagadoAll,s)+'</div><div class="acum-sub">cobrado total</div></div>';
-    html+='<div style="text-align:right"><div class="acum-label">Por cobrar total</div><div class="acum-value" style="color:#c8a844">'+fmt(data.totalPorCobrarAll,s)+'</div></div>';
-    html+='</div>';
-  }
-
-  // KPIs
   html+='<div class="kpi-row">';
-  html+='<div class="kpi-card gold"><div class="kpi-label">💵 Cobrado · '+mesLabel+'</div><div class="kpi-value gold">'+fmt(totalPagado,s)+'</div><div class="kpi-sub"><span class="trend-neutral">Pagado y confirmado</span></div></div>';
-  html+='<div class="kpi-card amber"><div class="kpi-label">⏳ Por cobrar</div><div class="kpi-value amber">'+fmt(totalPorCobrar,s)+'</div><div class="kpi-sub"><span class="trend-neutral">Activas sin pagar</span></div></div>';
-  html+='<div class="kpi-card"><div class="kpi-label">✅ Marcas activas</div><div class="kpi-value green">'+((data.marcasActivas||0)+(data.marcasRenovadas||0)+(data.marcasFinalizado||0))+'</div><div class="kpi-sub"><span class="trend-neutral">'+(data.marcasActivas||0)+' activas · '+(data.marcasRenovadas||0)+' renovadas · '+(data.marcasFinalizado||0)+' finalizadas</span></div></div>';
+  html+='<div class="kpi-card gold"><div class="kpi-label">💵 Cobrado · '+(data.mes||'Este mes')+'</div><div class="kpi-value gold">'+fmt(data.totalPagado,s)+'</div><div class="kpi-sub"><span class="trend-neutral">Pagado y confirmado</span></div></div>';
+  html+='<div class="kpi-card amber"><div class="kpi-label">⏳ Por cobrar</div><div class="kpi-value amber">'+fmt(data.totalPorCobrar,s)+'</div><div class="kpi-sub"><span class="trend-neutral">Activas sin pagar</span></div></div>';
+  html+='<div class="kpi-card"><div class="kpi-label">✅ Activas · Renovadas · Finalizadas</div><div class="kpi-value green">'+((data.marcasActivas||0)+(data.marcasRenovadas||0)+(data.marcasFinalizado||0))+'</div><div class="kpi-sub"><span class="trend-neutral">'+(data.marcasActivas||0)+' activas · '+(data.marcasRenovadas||0)+' renovadas · '+(data.marcasFinalizado||0)+' finalizadas</span></div></div>';
   html+='</div>';
 
-  // Donuts
   html+='<div class="two-col">';
   if(data.byStatus&&data.byStatus.length>0){var tS=data.byStatus.reduce(function(a,i){return a+i.total},0);html+='<div class="donut-card"><div class="sec-title">📌 Por status</div><div class="donut-inner">'+donut(data.byStatus,tS,80)+'<div class="donut-legend">';data.byStatus.forEach(function(item,i){var pct=tS>0?Math.round(item.total/tS*100):0;html+='<div class="donut-item"><div class="donut-dot" style="background:'+COLORS[i%COLORS.length]+'"></div><div class="donut-name">'+item.nombre+'</div><div class="donut-val">'+item.total+' ('+pct+'%)</div></div>';});html+='</div></div></div>';}
-  if(byTipo&&byTipo.length>0){var tT=byTipo.reduce(function(a,i){return a+i.total},0);html+='<div class="donut-card"><div class="sec-title">💡 Tipo</div><div class="donut-inner">'+donut(byTipo,tT,80)+'<div class="donut-legend">';byTipo.forEach(function(item,i){var pct=tT>0?Math.round(item.total/tT*100):0;html+='<div class="donut-item"><div class="donut-dot" style="background:'+COLORS[i%COLORS.length]+'"></div><div class="donut-name">'+item.nombre+'</div><div class="donut-val">'+item.total+' ('+pct+'%)</div></div>';});html+='</div></div></div>';}
-  html+='</div>';
-  html+='<div class="two-col">';
-  if(byIndustria&&byIndustria.length>0){var tI=byIndustria.reduce(function(a,i){return a+i.total},0);html+='<div class="donut-card"><div class="sec-title">🏭 Por industria</div><div class="donut-inner">'+donut(byIndustria,tI,80)+'<div class="donut-legend">';byIndustria.forEach(function(item,i){var pct=tI>0?Math.round(item.total/tI*100):0;html+='<div class="donut-item"><div class="donut-dot" style="background:'+COLORS[i%COLORS.length]+'"></div><div class="donut-name">'+item.nombre+'</div><div class="donut-val">'+pct+'% · '+fmt(item.total,s)+'</div></div>';});html+='</div></div></div>';}
-  if(byCliente&&byCliente.length>0){var top3=byCliente.slice(0,3);var maxC=top3[0].total;html+='<div class="client-card"><div class="sec-title">👤 Top marcas</div>';top3.forEach(function(item,i){var pct=maxC>0?Math.round(item.total/maxC*100):0;var sim=item.simbolo||s;html+='<div class="client-row"><div class="client-rank">'+(i+1)+'</div><div class="client-name">'+item.nombre+'</div>'+badge(item.etiqueta)+'<div class="client-bar-wrap"><div class="client-bar-fill" style="width:'+pct+'%"></div></div><div class="client-amount">'+fmt(item.total,sim)+'</div></div>';});if(byCliente.length>3){html+='<div style="text-align:center;padding-top:6px;font-size:10px;color:#524d44">+'+(byCliente.length-3)+' más</div>';}html+='</div>';}
+  if(data.byTipo&&data.byTipo.length>0){var tT=data.byTipo.reduce(function(a,i){return a+i.total},0);html+='<div class="donut-card"><div class="sec-title">💡 Tipo</div><div class="donut-inner">'+donut(data.byTipo,tT,80)+'<div class="donut-legend">';data.byTipo.forEach(function(item,i){var pct=tT>0?Math.round(item.total/tT*100):0;html+='<div class="donut-item"><div class="donut-dot" style="background:'+COLORS[i%COLORS.length]+'"></div><div class="donut-name">'+item.nombre+'</div><div class="donut-val">'+item.total+' ('+pct+'%)</div></div>';});html+='</div></div></div>';}
   html+='</div>';
 
-  // Campañas — tabla web
-  if(campanas&&campanas.length>0){
+  html+='<div class="two-col">';
+  if(data.byIndustria&&data.byIndustria.length>0){var tI=data.byIndustria.reduce(function(a,i){return a+i.total},0);html+='<div class="donut-card"><div class="sec-title">🏭 Por industria / servicio</div><div class="donut-inner">'+donut(data.byIndustria,tI,80)+'<div class="donut-legend">';data.byIndustria.forEach(function(item,i){var pct=tI>0?Math.round(item.total/tI*100):0;html+='<div class="donut-item"><div class="donut-dot" style="background:'+COLORS[i%COLORS.length]+'"></div><div class="donut-name">'+item.nombre+'</div><div class="donut-val">'+pct+'% · '+fmt(item.total,s)+'</div></div>';});html+='</div></div></div>';}
+  if(data.byCliente&&data.byCliente.length>0){
+    var top3=data.byCliente.slice(0,3);var maxC=top3[0].total;
+    html+='<div class="client-card"><div class="sec-title">👤 Top marcas / clientes</div>';
+    top3.forEach(function(item,i){var pct=maxC>0?Math.round(item.total/maxC*100):0;var sim=item.simbolo||s;html+='<div class="client-row"><div class="client-rank">'+(i+1)+'</div><div class="client-name">'+item.nombre+'</div>'+badge(item.etiqueta)+'<div class="client-bar-wrap"><div class="client-bar-fill" style="width:'+pct+'%"></div></div><div class="client-amount">'+fmt(item.total,sim)+'</div></div>';});
+    if(data.byCliente.length>3){html+='<div style="text-align:center;padding-top:8px;font-size:10px;color:#524d44">+'+(data.byCliente.length-3)+' más</div>';}
+    html+='</div>';
+  }
+  html+='</div>';
+
+  if(data.campanas&&data.campanas.length>0){
     html+='<div class="camp-card"><div class="sec-title">🎯 Campañas</div>';
+    // Tabla web
     html+='<table class="camp-table"><thead><tr><th>Campaña</th><th>Marca</th><th>Mes</th><th>Monto</th><th>Status</th><th>Pagado</th></tr></thead><tbody>';
-    campanas.forEach(function(c){
+    data.campanas.forEach(function(c){
       html+='<tr>';
       html+='<td style="color:#e8e2d8;font-weight:500">'+c.campana+'</td>';
       html+='<td style="color:#c8bfa8">'+c.marca+'</td>';
       html+='<td style="color:#8a8070">'+c.mes+'</td>';
       html+='<td style="font-family:monospace;color:#e2c880">'+fmt(c.monto,c.simbolo||s)+'</td>';
       html+='<td>'+badge(c.etiqueta)+'</td>';
-      html+='<td><span class="pagado-badge '+(c.pagado?'pagado-si':'pagado-no')+'">'+(c.pagado?'✓ Pagado':'⏳ Pendiente')+'</span></td>';
+      html+='<td><span class="'+(c.pagado?'pagado-si':'pagado-no')+'">'+(c.pagado?'✓ Pagado':'⏳ Pendiente')+'</span></td>';
       html+='</tr>';
     });
     html+='</tbody></table>';
-
-    // Campañas — tarjetas móvil
-    html+='<div class="camp-cards-mobile">';
-    campanas.forEach(function(c){
-      html+='<div class="camp-card-item">';
-      html+='<div class="camp-card-row"><span style="font-size:13px;font-weight:600;color:#e8e2d8">'+c.campana+'</span>'+badge(c.etiqueta)+'</div>';
-      html+='<div class="camp-card-row"><span class="camp-card-label">Marca</span><span class="camp-card-val">'+c.marca+'</span></div>';
-      html+='<div class="camp-card-row"><span class="camp-card-label">Mes</span><span class="camp-card-val">'+c.mes+'</span></div>';
-      html+='<div class="camp-card-row"><span class="camp-card-label">Monto</span><span style="font-family:monospace;color:#e2c880">'+fmt(c.monto,c.simbolo||s)+'</span></div>';
-      html+='<div class="camp-card-row"><span class="camp-card-label">Pago</span><span class="pagado-badge '+(c.pagado?'pagado-si':'pagado-no')+'">'+(c.pagado?'✓ Pagado':'⏳ Pendiente')+'</span></div>';
+    // Tarjetas móvil
+    html+='<div class="camp-mobile">';
+    data.campanas.forEach(function(c){
+      html+='<div class="camp-item">';
+      html+='<div class="camp-row"><span style="font-size:13px;font-weight:600;color:#e8e2d8">'+c.campana+'</span>'+badge(c.etiqueta)+'</div>';
+      html+='<div class="camp-row"><span class="camp-lbl">Marca</span><span style="font-size:12px;color:#c8bfa8">'+c.marca+'</span></div>';
+      html+='<div class="camp-row"><span class="camp-lbl">Mes</span><span style="font-size:12px;color:#8a8070">'+c.mes+'</span></div>';
+      html+='<div class="camp-row"><span class="camp-lbl">Monto</span><span style="font-family:monospace;color:#e2c880;font-size:13px">'+fmt(c.monto,c.simbolo||s)+'</span></div>';
+      html+='<div class="camp-row"><span class="camp-lbl">Pago</span><span class="'+(c.pagado?'pagado-si':'pagado-no')+'">'+(c.pagado?'✓ Pagado':'⏳ Pendiente')+'</span></div>';
       html+='</div>';
     });
     html+='</div>';
@@ -243,23 +176,6 @@ function render(data){
   document.getElementById('fecha-header').textContent=new Date().toLocaleString('es-GT',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
 }
 
-function calcMesEsp(data, tipo){
-  var m=mesSeleccionado.toLowerCase();
-  var total=0;
-  (data.campanas||[]).forEach(function(c){
-    if(c.mes.toLowerCase()===m){
-      if(tipo==='pagado'&&c.pagado) total+=c.monto;
-      if(tipo==='porcobrar'&&!c.pagado) total+=c.monto;
-    }
-  });
-  return total;
-}
-
-function switchMes(mes){
-  mesSeleccionado=mes;
-  if(allData){buildMesTabs(allData);render(allData);}
-}
-
 function cargarDatos(){
   if(!USER_TOKEN||!USER_DBID){
     document.getElementById('content').innerHTML='<div class="error-box">⚠️ Dashboard no configurado. Ve a <a href="https://vault-config.vercel.app" style="color:#c4a05a">vault-config.vercel.app</a> para configurar.</div>';
@@ -268,12 +184,7 @@ function cargarDatos(){
   document.getElementById('content').innerHTML='<div class="loading">↻ Actualizando...</div>';
   fetch('/api/dashboard',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:USER_TOKEN,dbid:USER_DBID})})
   .then(function(res){return res.json();})
-  .then(function(data){
-    if(data.message){document.getElementById('content').innerHTML='<div class="error-box">Error: '+data.message+'</div>';return;}
-    allData=data;
-    buildMesTabs(data);
-    render(data);
-  })
+  .then(function(data){if(data.message){document.getElementById('content').innerHTML='<div class="error-box">Error: '+data.message+'</div>';return;}render(data);})
   .catch(function(err){document.getElementById('content').innerHTML='<div class="error-box">Error: '+err.message+'</div>';});
 }
 cargarDatos();
