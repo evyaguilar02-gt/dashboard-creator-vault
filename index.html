@@ -50,11 +50,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .loading{text-align:center;padding:40px;color:#524d44;font-size:13px}
 .error-box{background:rgba(142,64,64,0.15);border:1px solid rgba(142,64,64,0.3);border-radius:8px;padding:12px 16px;font-size:12px;color:#c07070}
 .footer{text-align:center;margin-top:20px;font-size:10px;color:#3a3628;letter-spacing:.1em;font-family:monospace}
- @media(max-width:600px){
-  .kpi-row{grid-template-columns:1fr}
-  .two-col{grid-template-columns:1fr}
-  .kpi-value{font-size:28px}
-  .donut-inner{flex-direction:column;align-items:flex-start}
+@media(max-width:600px){
+  .kpi-row{grid-template-columns:1fr 1fr}
+  .kpi-row .kpi-card:last-child{grid-column:1/-1}
+  .two-col{grid-template-columns:1fr 1fr}
+  .kpi-value{font-size:22px}
+  .kpi-card{padding:12px 14px}
+  .donut-inner{flex-direction:column;align-items:flex-start;gap:6px}
+  .donut-card{padding:12px}
+  .client-card{padding:12px}
+  body{padding:8px}
 }
 </style>
 </head>
