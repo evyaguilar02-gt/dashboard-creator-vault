@@ -19,7 +19,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .kpi-card.gold{border-color:rgba(196,160,90,0.3)}
 .kpi-card.amber{border-color:rgba(200,168,68,0.3)}
 .kpi-label{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#524d44;margin-bottom:8px}
-.kpi-value{font-size:34px;font-weight:700;color:#f5f0e8;line-height:1;font-family:monospace}
+.kpi-value{font-size:36px;font-weight:700;color:#f5f0e8;line-height:1;font-family:monospace}
 .kpi-value.gold{color:#e2c880}
 .kpi-value.amber{color:#c8a844}
 .kpi-value.green{color:#6db88a}
@@ -39,149 +39,69 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .donut-name{flex:1;color:#c8bfa8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .donut-val{color:#e2c880;font-family:monospace;font-size:11px;white-space:nowrap}
 .client-card{background:#1c1a16;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px}
-.client-row{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);gap:8px}
+.client-row{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);gap:6px}
 .client-row:last-child{border-bottom:none}
-.client-rank{font-size:13px;color:#524d44;font-family:monospace;width:20px;flex-shrink:0}
+.client-rank{font-size:13px;color:#524d44;font-family:monospace;width:24px;flex-shrink:0}
 .client-name{flex:1;font-size:13px;color:#e8e2d8;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.client-badge{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;flex-shrink:0;white-space:nowrap}
-.badge-activo{background:rgba(74,124,89,0.2);color:#6db88a;border:1px solid rgba(74,124,89,0.3)}
-.badge-renovado{background:rgba(96,152,208,0.2);color:#6098d0;border:1px solid rgba(96,152,208,0.3)}
-.badge-finalizado{background:rgba(196,160,90,0.15);color:#e2c880;border:1px solid rgba(196,160,90,0.3)}
-.badge-pagado{background:rgba(168,126,212,0.2);color:#a87ed4;border:1px solid rgba(168,126,212,0.3)}
-.client-bar-wrap{width:50px;background:rgba(255,255,255,0.05);border-radius:3px;height:4px;flex-shrink:0}
+.client-bar-wrap{width:60px;background:rgba(255,255,255,0.05);border-radius:3px;height:4px;flex-shrink:0}
 .client-bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#c4a05a,#e2c880)}
-.client-amount{font-size:12px;color:#e2c880;font-family:monospace;white-space:nowrap;flex-shrink:0}
+.client-amount{font-size:12px;color:#e2c880;font-family:monospace;white-space:nowrap}
 .loading{text-align:center;padding:40px;color:#524d44;font-size:13px}
 .error-box{background:rgba(142,64,64,0.15);border:1px solid rgba(142,64,64,0.3);border-radius:8px;padding:12px 16px;font-size:12px;color:#c07070}
 .footer{text-align:center;margin-top:20px;font-size:10px;color:#3a3628;letter-spacing:.1em;font-family:monospace}
-@media(max-width:540px){.kpi-row{grid-template-columns:1fr}.two-col{grid-template-columns:1fr}.kpi-value{font-size:28px}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="header">
-    <div class="header-title">📊 Dashboard de Ingresos · The Creator Vault</div>
-    <div class="header-right">
-      <span class="header-date" id="fecha-header"></span>
-      <button class="refresh-btn" onclick="cargarDatos()">↻ Actualizar</button>
-    </div>
-  </div>
-  <div id="content"><div class="loading">↻ Cargando datos desde Notion...</div></div>
-  <div class="footer">🏛️ The Creator Vault · Evelyn Aguilar · @evelynaguilar_gt</div>
-  <div class="footer" style="margin-top:3px;font-size:8px;opacity:0.6">© 2026 Evelyn Aguilar · Prohibida la venta, reproducción o redistribución sin autorización expresa.</div>
+ <div class="header">
+   <div class="header-title">📊 Dashboard de Ingresos · The Creator Vault</div>
+   <div class="header-right">
+     <span class="header-date" id="fecha-header"></span>
+     <button class="refresh-btn" onclick="cargarDatos()">↻ Actualizar</button>
+   </div>
+ </div>
+ <div id="content"><div class="loading">↻ Cargando datos desde Notion...</div></div>
+ <div class="footer">🏛️ The Creator Vault · Evelyn Aguilar · @evelynaguilar_gt</div>
+ <div class="footer" style="margin-top:3px;font-size:8px;opacity:0.6">©️ 2026 Evelyn Aguilar · Prohibida la venta, reproducción o redistribución sin autorización expresa.</div>
 </div>
 <script>
 var COLORS=['#c4a05a','#6db88a','#6098d0','#a87ed4','#c8a844','#c07070','#c09050','#5a9ab0'];
 var urlParams=new URLSearchParams(window.location.search);
 var USER_TOKEN=urlParams.get('token')||'';
 var USER_DBID=urlParams.get('dbid')||'';
-
-function fmt(n,simbolo){
-  if(!n||n===0)return (simbolo||'$')+'0';
-  return (simbolo||'$')+Number(n).toLocaleString('es-GT');
-}
-
-function badgeEtiqueta(etiqueta){
-  var e=(etiqueta||'').toLowerCase();
-  var cls='badge-activo';
-  if(e.indexOf('renovado')!==-1) cls='badge-renovado';
-  else if(e.indexOf('finalizado')!==-1||e.indexOf('cerrado')!==-1) cls='badge-finalizado';
-  else if(e.indexOf('pagado')!==-1) cls='badge-pagado';
-  return '<span class="client-badge '+cls+'">'+etiqueta+'</span>';
-}
-
-function donut(data,total,size){
-  size=size||90;var cx=size/2,cy=size/2,r=size*0.38,stroke=size*0.14;
-  var circ=2*Math.PI*r,offset=0,paths='';
-  data.forEach(function(item,i){
-    var pct=total>0?item.total/total:0;
-    var dash=pct*circ,gap=circ-dash;
-    paths+='<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+COLORS[i%COLORS.length]+'" stroke-width="'+stroke+'" stroke-dasharray="'+dash+' '+gap+'" stroke-dashoffset="'+(-(offset*circ))+'" transform="rotate(-90 '+cx+' '+cy+')" opacity="0.9"/>';
-    offset+=pct;
-  });
-  return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'"><circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="'+stroke+'"/>'+paths+'</svg>';
-}
-
+function fmt(n){if(!n||n===0)return '$0';return '$'+Number(n).toLocaleString('es-GT');}
+function donut(data,total,size){size=size||90;var cx=size/2,cy=size/2,r=size*0.38,stroke=size*0.14;var circ=2*Math.PI*r,offset=0,paths='';data.forEach(function(item,i){var pct=total>0?item.total/total:0;var dash=pct*circ,gap=circ-dash;paths+='<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+COLORS[i%COLORS.length]+'" stroke-width="'+stroke+'" stroke-dasharray="'+dash+' '+gap+'" stroke-dashoffset="'+(-(offset*circ))+'" transform="rotate(-90 '+cx+' '+cy+')" opacity="0.9"/>';offset+=pct;});return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'"><circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="'+stroke+'"/>'+paths+'</svg>';}
 function render(data){
-  var html='';
-  var totalActivas=(data.marcasActivas||0)+(data.marcasRenovadas||0)+(data.marcasFinalizado||0);
-
-  // KPIs
-  html+='<div class="kpi-row">';
-  html+='<div class="kpi-card gold"><div class="kpi-label">💵 Cobrado · '+(data.mes||'Este mes')+'</div><div class="kpi-value gold">'+fmt(data.totalPagado)+'</div>';
-  if(data.comparativo){var c=data.comparativo;var sign=c.pct>=0?'↑':'↓';var cls=c.pct>=0?'trend-up':'trend-down';html+='<div class="kpi-sub"><span class="'+cls+'">'+sign+' '+Math.abs(c.pct)+'% vs '+fmt(c.anterior)+' mes ant.</span></div>';}
-  else{html+='<div class="kpi-sub"><span class="trend-neutral">Sin datos del mes anterior</span></div>';}
-  html+='</div>';
-
-  html+='<div class="kpi-card amber"><div class="kpi-label">⏳ Por cobrar</div><div class="kpi-value amber">'+fmt(data.totalPorCobrar)+'</div><div class="kpi-sub"><span class="trend-neutral">Activas sin pagar</span></div></div>';
-
-  html+='<div class="kpi-card"><div class="kpi-label">✅ Activas · Renovadas · Finalizadas</div><div class="kpi-value green">'+totalActivas+'</div>';
-  html+='<div class="kpi-sub"><span class="trend-neutral">'+(data.marcasActivas||0)+' activas · '+(data.marcasRenovadas||0)+' renovadas · '+(data.marcasFinalizado||0)+' finalizadas</span></div></div>';
-  html+='</div>';
-
-  // Donuts — Status y Tipo
-  html+='<div class="two-col">';
-  if(data.byStatus&&data.byStatus.length>0){
-    var tS=data.byStatus.reduce(function(s,i){return s+i.total},0);
-    html+='<div class="donut-card"><div class="sec-title">📌 Por status</div><div class="donut-inner">'+donut(data.byStatus,tS,80)+'<div class="donut-legend">';
-    data.byStatus.forEach(function(item,i){var pct=tS>0?Math.round(item.total/tS*100):0;html+='<div class="donut-item"><div class="donut-dot" style="background:'+COLORS[i%COLORS.length]+'"></div><div class="donut-name">'+item.nombre+'</div><div class="donut-val">'+item.total+' ('+pct+'%)</div></div>';});
-    html+='</div></div></div>';
-  }
-  if(data.byTipo&&data.byTipo.length>0){
-    var tT=data.byTipo.reduce(function(s,i){return s+i.total},0);
-    html+='<div class="donut-card"><div class="sec-title">💡 Tipo</div><div class="donut-inner">'+donut(data.byTipo,tT,80)+'<div class="donut-legend">';
-    data.byTipo.forEach(function(item,i){var pct=tT>0?Math.round(item.total/tT*100):0;html+='<div class="donut-item"><div class="donut-dot" style="background:'+COLORS[i%COLORS.length]+'"></div><div class="donut-name">'+item.nombre+'</div><div class="donut-val">'+item.total+' ('+pct+'%)</div></div>';});
-    html+='</div></div></div>';
-  }
-  html+='</div>';
-
-  // Donuts — Industria y Top Marcas
-  html+='<div class="two-col">';
-  if(data.byIndustria&&data.byIndustria.length>0){
-    var tI=data.byIndustria.reduce(function(s,i){return s+i.total},0);
-    html+='<div class="donut-card"><div class="sec-title">🏭 Por industria / servicio</div><div class="donut-inner">'+donut(data.byIndustria,tI,80)+'<div class="donut-legend">';
-    data.byIndustria.forEach(function(item,i){var pct=tI>0?Math.round(item.total/tI*100):0;html+='<div class="donut-item"><div class="donut-dot" style="background:'+COLORS[i%COLORS.length]+'"></div><div class="donut-name">'+item.nombre+'</div><div class="donut-val">'+pct+'% · '+fmt(item.total)+'</div></div>';});
-    html+='</div></div></div>';
-  }
-  if(data.byCliente&&data.byCliente.length>0){
-    var top3=data.byCliente.slice(0,3);
-    var maxC=top3[0].total;
-    html+='<div class="client-card"><div class="sec-title">👤 Top marcas / clientes</div>';
-    top3.forEach(function(item,i){
-      var pct=maxC>0?Math.round(item.total/maxC*100):0;
-      var simbolo=item.simbolo||'$';
-      html+='<div class="client-row">';
-      html+='<div class="client-rank">'+(i+1)+'</div>';
-      html+='<div class="client-name">'+item.nombre+'</div>';
-      html+=badgeEtiqueta(item.etiqueta||'Activo');
-      html+='<div class="client-bar-wrap"><div class="client-bar-fill" style="width:'+pct+'%"></div></div>';
-      html+='<div class="client-amount">'+fmt(item.total,simbolo)+'</div>';
-      html+='</div>';
-    });
-    if(data.byCliente.length>3){
-      html+='<div style="text-align:center;padding-top:8px;font-size:10px;color:#524d44">+'+(data.byCliente.length-3)+' más</div>';
-    }
-    html+='</div>';
-  }
-  html+='</div>';
-
-  document.getElementById('content').innerHTML=html;
-  document.getElementById('fecha-header').textContent=new Date().toLocaleString('es-GT',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+ var html='';
+ html+='<div class="kpi-row">';
+ html+='<div class="kpi-card gold"><div class="kpi-label">💵 Cobrado · '+(data.mes||'Este mes')+'</div><div class="kpi-value gold">'+fmt(data.totalPagado)+'</div>';
+ if(data.comparativo){var c=data.comparativo;var sign=c.pct>=0?'↑':'↓';var cls=c.pct>=0?'trend-up':'trend-down';html+='<div class="kpi-sub"><span class="'+cls+'">'+sign+' '+Math.abs(c.pct)+'% vs '+fmt(c.anterior)+' mes ant.</span></div>';}
+ else{html+='<div class="kpi-sub"><span class="trend-neutral">Sin datos del mes anterior</span></div>';}
+ html+='</div>';
+ html+='<div class="kpi-card amber"><div class="kpi-label">⏳ Por cobrar</div><div class="kpi-value amber">'+fmt(data.totalPorCobrar)+'</div><div class="kpi-sub"><span class="trend-neutral">Activas sin pagar</span></div></div>';
+ html+='<div class="kpi-card"><div class="kpi-label">✅ Activas · Renovadas · Finalizadas</div><div class="kpi-value green">'+((data.marcasActivas||0)+(data.marcasRenovadas||0)+(data.marcasFinalizado||0))+'</div><div class="kpi-sub"><span class="trend-neutral">'+(data.marcasActivas||0)+' activas · '+(data.marcasRenovadas||0)+' renovadas · '+(data.marcasFinalizado||0)+' finalizadas</span></div></div>';
+ html+='</div>';
+ html+='<div class="two-col">';
+ if(data.byStatus&&data.byStatus.length>0){var tS=data.byStatus.reduce(function(s,i){return s+i.total},0);html+='<div class="donut-card"><div class="sec-title">📌 Por status</div><div class="donut-inner">'+donut(data.byStatus,tS,80)+'<div class="donut-legend">';data.byStatus.forEach(function(item,i){var pct=tS>0?Math.round(item.total/tS*100):0;html+='<div class="donut-item"><div class="donut-dot" style="background:'+COLORS[i%COLORS.length]+'"></div><div class="donut-name">'+item.nombre+'</div><div class="donut-val">'+item.total+' ('+pct+'%)</div></div>';});html+='</div></div></div>';}
+ if(data.byTipo&&data.byTipo.length>0){var tT=data.byTipo.reduce(function(s,i){return s+i.total},0);html+='<div class="donut-card"><div class="sec-title">💡 Tipo</div><div class="donut-inner">'+donut(data.byTipo,tT,80)+'<div class="donut-legend">';data.byTipo.forEach(function(item,i){var pct=tT>0?Math.round(item.total/tT*100):0;html+='<div class="donut-item"><div class="donut-dot" style="background:'+COLORS[i%COLORS.length]+'"></div><div class="donut-name">'+item.nombre+'</div><div class="donut-val">'+item.total+' ('+pct+'%)</div></div>';});html+='</div></div></div>';}
+ html+='</div>';
+ html+='<div class="two-col">';
+ if(data.byIndustria&&data.byIndustria.length>0){var tI=data.byIndustria.reduce(function(s,i){return s+i.total},0);html+='<div class="donut-card"><div class="sec-title">🏭 Por industria / servicio</div><div class="donut-inner">'+donut(data.byIndustria,tI,80)+'<div class="donut-legend">';data.byIndustria.forEach(function(item,i){var pct=tI>0?Math.round(item.total/tI*100):0;html+='<div class="donut-item"><div class="donut-dot" style="background:'+COLORS[i%COLORS.length]+'"></div><div class="donut-name">'+item.nombre+'</div><div class="donut-val">'+pct+'% · '+fmt(item.total)+'</div></div>';});html+='</div></div></div>';}
+ if(data.byCliente&&data.byCliente.length>0){var top3=data.byCliente.slice(0,3);var maxC=top3[0].total;html+='<div class="client-card"><div class="sec-title">👤 Top marcas / clientes</div>';top3.forEach(function(item,i){var pct=maxC>0?Math.round(item.total/maxC*100):0;var e=(item.etiqueta||'').toLowerCase();var badgeCls=e.indexOf('renovado')!==-1?'background:rgba(96,152,208,0.2);color:#6098d0':e.indexOf('finalizado')!==-1?'background:rgba(196,160,90,0.15);color:#e2c880':'background:rgba(74,124,89,0.2);color:#6db88a';html+='<div class="client-row"><div class="client-rank">'+(i+1)+'</div><div class="client-name">'+item.nombre+'</div><span style="font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;flex-shrink:0;'+badgeCls+'">'+(item.etiqueta||'Activo')+'</span><div class="client-bar-wrap"><div class="client-bar-fill" style="width:'+pct+'%"></div></div><div class="client-amount">'+fmt(item.total)+'</div></div>';});if(data.byCliente.length>3){html+='<div style="text-align:center;padding-top:8px;font-size:10px;color:#524d44">+'+(data.byCliente.length-3)+' más</div>';}html+='</div>';}
+ html+='</div>';
+ document.getElementById('content').innerHTML=html;
+ document.getElementById('fecha-header').textContent=new Date().toLocaleString('es-GT',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
 }
-
 function cargarDatos(){
-  if(!USER_TOKEN||!USER_DBID){
-    document.getElementById('content').innerHTML='<div class="error-box">⚠️ Dashboard no configurado. Ve a <a href="https://vault-config.vercel.app" style="color:#c4a05a">vault-config.vercel.app</a> para configurar tu dashboard.</div>';
-    return;
-  }
-  document.getElementById('content').innerHTML='<div class="loading">↻ Actualizando...</div>';
-  fetch('/api/dashboard',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:USER_TOKEN,dbid:USER_DBID})})
-  .then(function(res){return res.json();})
-  .then(function(data){
-    if(data.message){document.getElementById('content').innerHTML='<div class="error-box">Error: '+data.message+'</div>';return;}
-    render(data);
-  })
-  .catch(function(err){document.getElementById('content').innerHTML='<div class="error-box">Error: '+err.message+'</div>';});
+ if(!USER_TOKEN||!USER_DBID){
+   document.getElementById('content').innerHTML='<div class="error-box">⚠️ Dashboard no configurado. Ve a <a href="https://vault-config.vercel.app" style="color:#c4a05a">vault-config.vercel.app</a> para configurar tu dashboard.</div>';
+   return;
+ }
+ document.getElementById('content').innerHTML='<div class="loading">↻ Actualizando...</div>';
+ fetch('/api/dashboard',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:USER_TOKEN,dbid:USER_DBID})})
+ .then(function(res){return res.json();})
+ .then(function(data){if(data.message){document.getElementById('content').innerHTML='<div class="error-box">Error: '+data.message+'</div>';return;}render(data);})
+ .catch(function(err){document.getElementById('content').innerHTML='<div class="error-box">Error: '+err.message+'</div>';});
 }
 cargarDatos();
 setInterval(cargarDatos,5*60*1000);
