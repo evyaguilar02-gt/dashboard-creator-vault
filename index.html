@@ -14,6 +14,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .header-date{font-size:11px;color:#524d44;font-family:monospace}
 .refresh-btn{background:none;border:1px solid rgba(196,160,90,0.3);color:#c4a05a;font-size:11px;padding:5px 14px;border-radius:6px;cursor:pointer;font-family:inherit}
 .refresh-btn:hover{background:rgba(196,160,90,0.1)}
+
+/* KPIs — 3 columnas web, 2 columnas móvil */
 .kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
 .kpi-card{background:#1c1a16;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:18px 20px}
 .kpi-card.gold{border-color:rgba(196,160,90,0.3)}
@@ -25,10 +27,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .kpi-value.green{color:#6db88a}
 .kpi-sub{font-size:11px;margin-top:8px}
 .trend-neutral{color:#524d44;font-style:italic}
+
+/* GRIDS DE 2 COLUMNAS */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+
+/* CARDS */
+.donut-card{background:#1c1a16;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px;height:100%}
+.client-card{background:#1c1a16;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px;height:100%}
+.camp-card-wrap{background:#1c1a16;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px;height:100%}
+
 .sec-title{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#524d44;margin-bottom:10px;display:flex;align-items:center;gap:8px}
 .sec-title::after{content:'';flex:1;height:1px;background:rgba(255,255,255,0.07)}
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
-.donut-card{background:#1c1a16;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px}
 .donut-inner{display:flex;align-items:center;gap:16px}
 .donut-legend{flex:1}
 .donut-item{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:12px}
@@ -36,7 +45,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .donut-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
 .donut-name{flex:1;color:#c8bfa8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .donut-val{color:#e2c880;font-family:monospace;font-size:11px;white-space:nowrap}
-.client-card{background:#1c1a16;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px}
+
+/* TOP MARCAS */
 .client-row{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);gap:6px}
 .client-row:last-child{border-bottom:none}
 .client-rank{font-size:13px;color:#524d44;font-family:monospace;width:24px;flex-shrink:0}
@@ -45,36 +55,50 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .client-bar-wrap{width:60px;background:rgba(255,255,255,0.05);border-radius:3px;height:4px;flex-shrink:0}
 .client-bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#c4a05a,#e2c880)}
 .client-amount{font-size:12px;color:#e2c880;font-family:monospace;white-space:nowrap}
-/* CAMPAÑAS WEB */
-.camp-card{background:#1c1a16;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px;margin-bottom:16px}
+
+/* TOP CAMPAÑAS */
+.camp-row-item{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);gap:6px}
+.camp-row-item:last-child{border-bottom:none}
+.camp-name{flex:1;font-size:12px;color:#e8e2d8;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.camp-meta{font-size:10px;color:#524d44;white-space:nowrap}
+.pagado-si{font-size:10px;padding:2px 6px;border-radius:8px;font-weight:600;background:rgba(74,124,89,0.2);color:#6db88a;white-space:nowrap}
+.pagado-no{font-size:10px;padding:2px 6px;border-radius:8px;font-weight:600;background:rgba(200,168,68,0.15);color:#c8a844;white-space:nowrap}
+
+/* CAMPAÑAS WEB — tabla completa */
+.camp-full{background:#1c1a16;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px;margin-bottom:16px}
 .camp-table{width:100%;border-collapse:collapse;font-size:11px}
 .camp-table th{text-align:left;padding:7px 10px;color:#524d44;font-size:9px;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid rgba(255,255,255,0.07)}
 .camp-table td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:middle}
 .camp-table tr:last-child td{border-bottom:none}
 .camp-table tr:hover td{background:rgba(255,255,255,0.02)}
-.pagado-si{font-size:10px;padding:2px 7px;border-radius:8px;font-weight:600;background:rgba(74,124,89,0.2);color:#6db88a}
-.pagado-no{font-size:10px;padding:2px 7px;border-radius:8px;font-weight:600;background:rgba(200,168,68,0.15);color:#c8a844}
-/* CAMPAÑAS MÓVIL */
-.camp-mobile{display:none}
-.camp-item{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:10px}
-.camp-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
-.camp-row:last-child{margin-bottom:0}
-.camp-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:#524d44}
+
 .loading{text-align:center;padding:40px;color:#524d44;font-size:13px}
 .error-box{background:rgba(142,64,64,0.15);border:1px solid rgba(142,64,64,0.3);border-radius:8px;padding:12px 16px;font-size:12px;color:#c07070}
 .footer{text-align:center;margin-top:20px;font-size:10px;color:#3a3628;letter-spacing:.1em;font-family:monospace}
+
+/* MÓVIL */
 @media(max-width:600px){
+  /* Fila 1: Cobrado + Por cobrar */
   .kpi-row{grid-template-columns:1fr 1fr}
-  .kpi-row .kpi-card:last-child{grid-column:unset}
-  .two-col{grid-template-columns:1fr 1fr}
+  /* Activas ocupa todo el ancho en web pero en móvil va en su propia fila */
   .kpi-value{font-size:20px}
   .kpi-card{padding:10px 12px}
-  .donut-inner{flex-direction:column;align-items:flex-start;gap:6px}
+  /* Fila 2: Activas + Tipo → two-col */
+  /* Fila 3: Status + Industria → two-col */
+  /* Fila 4: Top marcas + Top campañas → two-col */
+  .two-col{grid-template-columns:1fr 1fr}
+  .donut-inner{flex-direction:column;align-items:flex-start;gap:4px}
   .donut-card{padding:10px}
   .client-card{padding:10px}
-  .camp-table{display:none}
-  .camp-mobile{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .camp-card-wrap{padding:10px}
+  /* Ocultar tabla web de campañas en móvil */
+  .camp-full{display:none}
   body{padding:8px}
+}
+@media(min-width:601px){
+  /* En web ocultar la fila móvil de activas+tipo */
+  .row-activas-tipo-mobile{display:none}
+  /* Ocultar last two-col de marcas+campañas en móvil */
 }
 </style>
 </head>
@@ -108,7 +132,7 @@ function badge(etiqueta){
 }
 
 function donut(data,total,size){
-  size=size||90;var cx=size/2,cy=size/2,r=size*0.38,stroke=size*0.14;
+  size=size||80;var cx=size/2,cy=size/2,r=size*0.38,stroke=size*0.14;
   var circ=2*Math.PI*r,offset=0,paths='';
   data.forEach(function(item,i){
     var pct=total>0?item.total/total:0;var dash=pct*circ,gap=circ-dash;
@@ -118,71 +142,111 @@ function donut(data,total,size){
   return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'"><circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="'+stroke+'"/>'+paths+'</svg>';
 }
 
+function donutCard(title, data){
+  var total=data.reduce(function(a,i){return a+i.total},0);
+  var html='<div class="donut-card"><div class="sec-title">'+title+'</div><div class="donut-inner">'+donut(data,total,80)+'<div class="donut-legend">';
+  data.forEach(function(item,i){var pct=total>0?Math.round(item.total/total*100):0;html+='<div class="donut-item"><div class="donut-dot" style="background:'+COLORS[i%COLORS.length]+'"></div><div class="donut-name">'+item.nombre+'</div><div class="donut-val">'+item.total+' ('+pct+'%)</div></div>';});
+  html+='</div></div></div>';
+  return html;
+}
+
+function donutCardMonto(title, data, s){
+  var total=data.reduce(function(a,i){return a+i.total},0);
+  var html='<div class="donut-card"><div class="sec-title">'+title+'</div><div class="donut-inner">'+donut(data,total,80)+'<div class="donut-legend">';
+  data.forEach(function(item,i){var pct=total>0?Math.round(item.total/total*100):0;html+='<div class="donut-item"><div class="donut-dot" style="background:'+COLORS[i%COLORS.length]+'"></div><div class="donut-name">'+item.nombre+'</div><div class="donut-val">'+pct+'% · '+fmt(item.total,s)+'</div></div>';});
+  html+='</div></div></div>';
+  return html;
+}
+
+function topMarcasCard(data, s){
+  var top3=data.slice(0,3);var maxC=top3[0].total;
+  var html='<div class="client-card"><div class="sec-title">👤 Top marcas</div>';
+  top3.forEach(function(item,i){var pct=maxC>0?Math.round(item.total/maxC*100):0;var sim=item.simbolo||s;html+='<div class="client-row"><div class="client-rank">'+(i+1)+'</div><div class="client-name">'+item.nombre+'</div>'+badge(item.etiqueta)+'<div class="client-bar-wrap"><div class="client-bar-fill" style="width:'+pct+'%"></div></div><div class="client-amount">'+fmt(item.total,sim)+'</div></div>';});
+  if(data.length>3)html+='<div style="text-align:center;padding-top:8px;font-size:10px;color:#524d44">+'+( data.length-3)+' más</div>';
+  html+='</div>';
+  return html;
+}
+
+function topCampCard(data, s){
+  var top3=data.slice(0,3);
+  var html='<div class="camp-card-wrap"><div class="sec-title">🎯 Top campañas</div>';
+  top3.forEach(function(c){
+    html+='<div class="camp-row-item">';
+    html+='<div style="flex:1;min-width:0"><div class="camp-name">'+c.campana+'</div><div class="camp-meta">'+c.marca+' · '+c.mes+'</div></div>';
+    html+='<div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px"><span style="font-family:monospace;color:#e2c880;font-size:11px">'+fmt(c.monto,c.simbolo||s)+'</span><span class="'+(c.pagado?'pagado-si':'pagado-no')+'">'+(c.pagado?'✓ Pagado':'⏳ Pendiente')+'</span></div>';
+    html+='</div>';
+  });
+  html+='</div>';
+  return html;
+}
+
 function render(data){
   var s=data.simbolo||'$';
   var html='';
 
-  // KPIs — fila de 3 en web, 2+2 en móvil
+  // FILA 1 — Cobrado + Por cobrar (web: +Activas en 3ra col, móvil: solo 2)
   html+='<div class="kpi-row">';
   html+='<div class="kpi-card gold"><div class="kpi-label">💵 Cobrado · '+(data.mes||'Este mes')+'</div><div class="kpi-value gold">'+fmt(data.totalPagado,s)+'</div><div class="kpi-sub"><span class="trend-neutral">Pagado y confirmado</span></div></div>';
   html+='<div class="kpi-card amber"><div class="kpi-label">⏳ Por cobrar</div><div class="kpi-value amber">'+fmt(data.totalPorCobrar,s)+'</div><div class="kpi-sub"><span class="trend-neutral">Activas sin pagar</span></div></div>';
-  html+='<div class="kpi-card"><div class="kpi-label">✅ Activas · Renovadas · Finalizadas</div><div class="kpi-value green">'+((data.marcasActivas||0)+(data.marcasRenovadas||0)+(data.marcasFinalizado||0))+'</div><div class="kpi-sub"><span class="trend-neutral">'+(data.marcasActivas||0)+' activas · '+(data.marcasRenovadas||0)+' renovadas · '+(data.marcasFinalizado||0)+' finalizadas</span></div></div>';
+  // 3ra card — visible en web, oculta en móvil
+  html+='<div class="kpi-card" style="display:var(--kpi3-display,block)"><div class="kpi-label">✅ Activas · Renovadas · Finalizadas</div><div class="kpi-value green">'+((data.marcasActivas||0)+(data.marcasRenovadas||0)+(data.marcasFinalizado||0))+'</div><div class="kpi-sub"><span class="trend-neutral">'+(data.marcasActivas||0)+' activas · '+(data.marcasRenovadas||0)+' renovadas · '+(data.marcasFinalizado||0)+' finalizadas</span></div></div>';
   html+='</div>';
 
-  // Fila 1 donuts: Status + Tipo
+  // FILA 2 MÓVIL — Activas + Tipo (solo visible en móvil)
+  var tipoHtml='';
+  if(data.byTipo&&data.byTipo.length>0) tipoHtml=donutCard('💡 Tipo',data.byTipo);
+
+  html+='<div class="two-col" id="row-activas-tipo">';
+  // Activas — solo en móvil esta posición
+  html+='<div class="kpi-card" id="kpi-activas-mob"><div class="kpi-label">✅ Activas · Renov · Final</div><div class="kpi-value green">'+((data.marcasActivas||0)+(data.marcasRenovadas||0)+(data.marcasFinalizado||0))+'</div><div class="kpi-sub"><span class="trend-neutral">'+(data.marcasActivas||0)+' · '+(data.marcasRenovadas||0)+' · '+(data.marcasFinalizado||0)+'</span></div></div>';
+  html+=tipoHtml;
+  html+='</div>';
+
+  // FILA 3 — Por status + Por industria
   html+='<div class="two-col">';
-  if(data.byStatus&&data.byStatus.length>0){var tS=data.byStatus.reduce(function(a,i){return a+i.total},0);html+='<div class="donut-card"><div class="sec-title">📌 Por status</div><div class="donut-inner">'+donut(data.byStatus,tS,80)+'<div class="donut-legend">';data.byStatus.forEach(function(item,i){var pct=tS>0?Math.round(item.total/tS*100):0;html+='<div class="donut-item"><div class="donut-dot" style="background:'+COLORS[i%COLORS.length]+'"></div><div class="donut-name">'+item.nombre+'</div><div class="donut-val">'+item.total+' ('+pct+'%)</div></div>';});html+='</div></div></div>';}
-  if(data.byTipo&&data.byTipo.length>0){var tT=data.byTipo.reduce(function(a,i){return a+i.total},0);html+='<div class="donut-card"><div class="sec-title">💡 Tipo</div><div class="donut-inner">'+donut(data.byTipo,tT,80)+'<div class="donut-legend">';data.byTipo.forEach(function(item,i){var pct=tT>0?Math.round(item.total/tT*100):0;html+='<div class="donut-item"><div class="donut-dot" style="background:'+COLORS[i%COLORS.length]+'"></div><div class="donut-name">'+item.nombre+'</div><div class="donut-val">'+item.total+' ('+pct+'%)</div></div>';});html+='</div></div></div>';}
+  if(data.byStatus&&data.byStatus.length>0) html+=donutCard('📌 Por status',data.byStatus);
+  if(data.byIndustria&&data.byIndustria.length>0) html+=donutCardMonto('🏭 Por industria',data.byIndustria,s);
   html+='</div>';
 
-  // Fila 2 donuts: Industria + Top Marcas
+  // FILA 4 WEB — Tipo (solo web) ya fue en fila 2 web
+  // En web la fila 2 debe ser Tipo+Industria — reordenamos con CSS
+
+  // FILA 4 — Top marcas + Top campañas
   html+='<div class="two-col">';
-  if(data.byIndustria&&data.byIndustria.length>0){var tI=data.byIndustria.reduce(function(a,i){return a+i.total},0);html+='<div class="donut-card"><div class="sec-title">🏭 Por industria / servicio</div><div class="donut-inner">'+donut(data.byIndustria,tI,80)+'<div class="donut-legend">';data.byIndustria.forEach(function(item,i){var pct=tI>0?Math.round(item.total/tI*100):0;html+='<div class="donut-item"><div class="donut-dot" style="background:'+COLORS[i%COLORS.length]+'"></div><div class="donut-name">'+item.nombre+'</div><div class="donut-val">'+pct+'% · '+fmt(item.total,s)+'</div></div>';});html+='</div></div></div>';}
-  if(data.byCliente&&data.byCliente.length>0){
-    var top3=data.byCliente.slice(0,3);var maxC=top3[0].total;
-    html+='<div class="client-card"><div class="sec-title">👤 Top marcas / clientes</div>';
-    top3.forEach(function(item,i){var pct=maxC>0?Math.round(item.total/maxC*100):0;var sim=item.simbolo||s;html+='<div class="client-row"><div class="client-rank">'+(i+1)+'</div><div class="client-name">'+item.nombre+'</div>'+badge(item.etiqueta)+'<div class="client-bar-wrap"><div class="client-bar-fill" style="width:'+pct+'%"></div></div><div class="client-amount">'+fmt(item.total,sim)+'</div></div>';});
-    if(data.byCliente.length>3){html+='<div style="text-align:center;padding-top:8px;font-size:10px;color:#524d44">+'+(data.byCliente.length-3)+' más</div>';}
-    html+='</div>';
-  }
+  if(data.byCliente&&data.byCliente.length>0) html+=topMarcasCard(data.byCliente,s);
+  if(data.campanas&&data.campanas.length>0) html+=topCampCard(data.campanas,s);
   html+='</div>';
 
-  // Campañas — WEB tabla top 3, MÓVIL 2 tarjetas lado a lado
+  // TABLA COMPLETA DE CAMPAÑAS — solo web
   if(data.campanas&&data.campanas.length>0){
-    var top3c=data.campanas.slice(0,3);
-    html+='<div class="camp-card"><div class="sec-title">🎯 Top campañas</div>';
-
-    // Tabla web
+    html+='<div class="camp-full"><div class="sec-title">🎯 Todas las campañas</div>';
     html+='<table class="camp-table"><thead><tr><th>Campaña</th><th>Marca</th><th>Mes</th><th>Monto</th><th>Status</th><th>Pagado</th></tr></thead><tbody>';
-    top3c.forEach(function(c){
-      html+='<tr>';
-      html+='<td style="color:#e8e2d8;font-weight:500">'+c.campana+'</td>';
-      html+='<td style="color:#c8bfa8">'+c.marca+'</td>';
-      html+='<td style="color:#8a8070">'+c.mes+'</td>';
-      html+='<td style="font-family:monospace;color:#e2c880">'+fmt(c.monto,c.simbolo||s)+'</td>';
-      html+='<td>'+badge(c.etiqueta)+'</td>';
-      html+='<td><span class="'+(c.pagado?'pagado-si':'pagado-no')+'">'+(c.pagado?'✓ Pagado':'⏳ Pendiente')+'</span></td>';
-      html+='</tr>';
+    data.campanas.forEach(function(c){
+      html+='<tr><td style="color:#e8e2d8;font-weight:500">'+c.campana+'</td><td style="color:#c8bfa8">'+c.marca+'</td><td style="color:#8a8070">'+c.mes+'</td><td style="font-family:monospace;color:#e2c880">'+fmt(c.monto,c.simbolo||s)+'</td><td>'+badge(c.etiqueta)+'</td><td><span class="'+(c.pagado?'pagado-si':'pagado-no')+'">'+(c.pagado?'✓ Pagado':'⏳ Pendiente')+'</span></td></tr>';
     });
-    html+='</tbody></table>';
-
-    // Tarjetas móvil — grid 2 columnas
-    html+='<div class="camp-mobile">';
-    top3c.forEach(function(c){
-      html+='<div class="camp-item">';
-      html+='<div class="camp-row"><span style="font-size:12px;font-weight:600;color:#e8e2d8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+c.campana+'</span></div>';
-      html+='<div class="camp-row" style="margin-top:4px">'+badge(c.etiqueta)+'<span class="'+(c.pagado?'pagado-si':'pagado-no')+'">'+(c.pagado?'✓':'⏳')+'</span></div>';
-      html+='<div class="camp-row" style="margin-top:4px"><span class="camp-lbl">Marca</span><span style="font-size:11px;color:#c8bfa8">'+c.marca+'</span></div>';
-      html+='<div class="camp-row"><span class="camp-lbl">Monto</span><span style="font-family:monospace;color:#e2c880;font-size:12px">'+fmt(c.monto,c.simbolo||s)+'</span></div>';
-      html+='</div>';
-    });
-    html+='</div>';
-    html+='</div>';
+    html+='</tbody></table></div>';
   }
 
   document.getElementById('content').innerHTML=html;
   document.getElementById('fecha-header').textContent=new Date().toLocaleString('es-GT',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+
+  // Aplicar lógica responsive via JS
+  aplicarResponsive();
 }
+
+function aplicarResponsive(){
+  var isMobile=window.innerWidth<=600;
+  // 3ra KPI card — oculta en móvil (aparece en fila activas+tipo)
+  var kpi3=document.querySelector('.kpi-row .kpi-card:nth-child(3)');
+  if(kpi3) kpi3.style.display=isMobile?'none':'block';
+  // Fila activas+tipo — solo en móvil
+  var rowAt=document.getElementById('row-activas-tipo');
+  if(rowAt) rowAt.style.display=isMobile?'grid':'none';
+}
+
+window.addEventListener('resize',function(){
+  if(document.getElementById('content').innerHTML.indexOf('loading')===-1) aplicarResponsive();
+});
 
 function cargarDatos(){
   if(!USER_TOKEN||!USER_DBID){
